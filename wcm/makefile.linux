@@ -1,0 +1,327 @@
+CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -O3 -I wal -I swl -pthread $(CFLAGS_FREETYPE) -I/usr/src/contrib/libstdc++/include/backward
+#CFLAGS= -D_FILE_OFFSET_BITS=64 -I /usr/local/include -g -O1 -fno-inline -I wal -I swl -pthread $(CFLAGS_FREETYPE)
+
+include makelib.mk
+
+LIBS = -L /usr/local/lib -L /usr/X11R6/lib -l stdc++  -l  X11 -l pthread $(LIBSMB) $(LIBSSH) $(LIBFREETYPE)
+
+
+HW = wal/wal_tmpls.h wal/wal.h wal/wal_sys_api.h
+HS = swl/swl.h swl/swl_internal.h swl/swl_layout.h swl/swl_winbase.h swl/swl_wincore.h swl/swl_wincore_internal.h 
+HN = libconf.h nc.h ncwin.h panel.h ncdialogs.h  terminal.h termwin.h ncedit.h nchistory.h shell.h \
+ operthread.h operwin.h vfs.h vfspath.h vfs-smb.h vfs-uri.h fileopers.h mfile.h eloadsave.h smblogon.h ext-app.h bfile.h \
+ wcm-config.h panel_list.h tcp_sock.h vfs-ftp.h ftplogon.h charsetdlg.h vfs-sftp.h sftpdlg.h color-style.h filesearch.h help.h ux_util.h \
+ strconfig.h shortcuts.h fontdlg.h ncfonts.h shl.h toolbar.h ncview.h search-dlg.h search-tools.h shell-tools.h t-emulator.h dircalc.h ltext.h
+
+COPTS += -I swl -std=c++11
+CC = gcc
+
+# COPTS += -I swl -Wno-parentheses -fsanitize=address -g
+# -fsanitize=address -fsanitize=integer -fsanitize=thread -fsanitize=undefined
+ 
+OBJDIR = obj
+
+OBJS = \
+	$(OBJDIR)/wal_tmpls.o \
+	$(OBJDIR)/wal.o\
+	$(OBJDIR)/wal_sys_api.o\
+	$(OBJDIR)/wal_charset.o\
+	$(OBJDIR)/wal_exceptions.o\
+	$(OBJDIR)/wal_files.o\
+	$(OBJDIR)/swl_button.o \
+	$(OBJDIR)/swl_editline.o  \
+	$(OBJDIR)/swl_layout.o    \
+	$(OBJDIR)/swl_menubox.o    \
+	$(OBJDIR)/swl_popupmenu.o   \
+	$(OBJDIR)/swl_sbutton.o     \
+	$(OBJDIR)/swl_scrollbar.o   \
+	$(OBJDIR)/swl_textlist.o    \
+	$(OBJDIR)/swl_vlist.o       \
+	$(OBJDIR)/swl_winbase.o     \
+	$(OBJDIR)/swl_wincore.o     \
+	$(OBJDIR)/swl_wincoreUX.o \
+	$(OBJDIR)/operthread.o \
+	$(OBJDIR)/operwin.o \
+	$(OBJDIR)/vfs.o \
+	$(OBJDIR)/vfspath.o \
+	$(OBJDIR)/vfs-smb.o \
+	$(OBJDIR)/tcp_sock.o \
+	$(OBJDIR)/vfs-ftp.o \
+	$(OBJDIR)/vfs-uri.o \
+	$(OBJDIR)/termwin.o \
+	$(OBJDIR)/ncdialogs.o \
+	$(OBJDIR)/terminal.o \
+	$(OBJDIR)/unicode_lc.o \
+	$(OBJDIR)/nchistory.o \
+	$(OBJDIR)/shell.o \
+	$(OBJDIR)/panel_list.o \
+	$(OBJDIR)/panel.o \
+	$(OBJDIR)/ncwin.o \
+	$(OBJDIR)/ncedit.o \
+	$(OBJDIR)/ncview.o \
+	$(OBJDIR)/fileopers.o \
+	$(OBJDIR)/eloadsave.o \
+	$(OBJDIR)/smblogon.o \
+	$(OBJDIR)/ext-app-ux.o \
+	$(OBJDIR)/wcm-config.o \
+	$(OBJDIR)/ftplogon.o \
+	$(OBJDIR)/charsetdlg.o \
+	$(OBJDIR)/vfs-sftp2.o \
+	$(OBJDIR)/sftpdlg.o \
+	$(OBJDIR)/color-style.o\
+	$(OBJDIR)/filesearch.o\
+	$(OBJDIR)/help.o\
+	$(OBJDIR)/helpres.o\
+	$(OBJDIR)/ux_util.o\
+	$(OBJDIR)/strconfig.o \
+	$(OBJDIR)/shortcuts.o \
+	$(OBJDIR)/fontdlg.o \
+	$(OBJDIR)/shl.o \
+	$(OBJDIR)/ncfonts.o \
+	$(OBJDIR)/toolbar.o \
+	$(OBJDIR)/search-dlg.o \
+	$(OBJDIR)/search-tools.o \
+	$(OBJDIR)/shell-tools.o \
+	$(OBJDIR)/t-emulator.o \
+	$(OBJDIR)/dircalc.o \
+	$(OBJDIR)/ltext.o
+
+#all: libconf_ux.h wcm
+#	cat info.txt
+
+all:   $(OBJS) $(OBJDIR)/nc.o  $(OBJDIR)/panel.o 
+	$(CC) $(CFLAGS)  -o wcm -pipe   $(OBJDIR)/nc.o  $(OBJS) $(LIBS) $(COPTS)
+	
+#libconf.h: libtester/libconf.create
+#	cd libtester &&	./libconf.create
+
+$(OBJDIR)/dircalc.o: $(HW) $(HS) $(HN) dircalc.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) dircalc.cpp -o $(OBJDIR)/dircalc.o
+	
+$(OBJDIR)/ncvfs.o: $(HW) $(HS) $(HN) ncvfs.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) ncvfs.cpp -o $(OBJDIR)/ncvfs.o
+	
+$(OBJDIR)/eloadsave.o: $(HW) $(HS) $(HN) eloadsave.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) eloadsave.cpp -o $(OBJDIR)/eloadsave.o
+
+$(OBJDIR)/smblogon.o: $(HW) $(HS) $(HN) smblogon.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) smblogon.cpp -o $(OBJDIR)/smblogon.o
+
+$(OBJDIR)/ftplogon.o: $(HW) $(HS) $(HN) ftplogon.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) ftplogon.cpp -o $(OBJDIR)/ftplogon.o
+	
+$(OBJDIR)/sftpdlg.o: $(HW) $(HS) $(HN) sftpdlg.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) sftpdlg.cpp -o $(OBJDIR)/sftpdlg.o
+	
+$(OBJDIR)/ext-app.o: $(HW) $(HS) $(HN) ext-app.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) ext-app.cpp -o $(OBJDIR)/ext-app.o
+
+$(OBJDIR)/ext-app-ux.o: $(HW) $(HS) $(HN) ext-app-ux.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) ext-app-ux.cpp -o $(OBJDIR)/ext-app-ux.o
+
+				
+$(OBJDIR)/operthread.o: $(HW) $(HS) $(HN) operthread.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) operthread.cpp -o $(OBJDIR)/operthread.o
+	
+$(OBJDIR)/operwin.o: $(HW) $(HS) $(HN) operwin.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) operwin.cpp -o $(OBJDIR)/operwin.o
+
+$(OBJDIR)/wcm-config.o: $(HW) $(HS) $(HN) wcm-config.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) wcm-config.cpp -o $(OBJDIR)/wcm-config.o
+	
+$(OBJDIR)/color-style.o: $(HW) $(HS) $(HN) color-style.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) color-style.cpp -o $(OBJDIR)/color-style.o
+
+$(OBJDIR)/filesearch.o: $(HW) $(HS) $(HN) filesearch.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) filesearch.cpp -o $(OBJDIR)/filesearch.o
+	
+$(OBJDIR)/fontdlg.o: $(HW) $(HS) $(HN) fontdlg.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) fontdlg.cpp -o $(OBJDIR)/fontdlg.o
+	
+$(OBJDIR)/help.o: $(HW) $(HS) $(HN) help.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) help.cpp -o $(OBJDIR)/help.o
+	
+$(OBJDIR)/helpres.o: $(HW) $(HS) $(HN) helpres.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) helpres.cpp -o $(OBJDIR)/helpres.o
+
+$(OBJDIR)/ltext.o: $(HW) $(HS) $(HN) ltext.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) ltext.cpp -o $(OBJDIR)/ltext.o
+	
+$(OBJDIR)/ncfonts.o: $(HW) $(HS) $(HN) ncfonts.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) ncfonts.cpp -o $(OBJDIR)/ncfonts.o
+	
+$(OBJDIR)/shortcuts.o: $(HW) $(HS) $(HN) shortcuts.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) shortcuts.cpp -o $(OBJDIR)/shortcuts.o
+
+$(OBJDIR)/strconfig.o: $(HW) $(HS) $(HN) strconfig.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) strconfig.cpp -o $(OBJDIR)/strconfig.o
+
+$(OBJDIR)/shl.o: $(HW) $(HS) $(HN) shl.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) shl.cpp -o $(OBJDIR)/shl.o
+
+$(OBJDIR)/toolbar.o: $(HW) $(HS) $(HN) toolbar.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) toolbar.cpp -o $(OBJDIR)/toolbar.o
+		
+$(OBJDIR)/charsetdlg.o: $(HW) $(HS) $(HN) charsetdlg.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) charsetdlg.cpp -o $(OBJDIR)/charsetdlg.o
+	
+$(OBJDIR)/ux_util.o: $(HW) $(HS) $(HN) ux_util.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) ux_util.cpp -o $(OBJDIR)/ux_util.o
+	
+		
+$(OBJDIR)/vfs.o: $(HW) $(HS) $(HN) vfs.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) vfs.cpp -o $(OBJDIR)/vfs.o
+	
+$(OBJDIR)/vfspath.o: $(HW) $(HS) $(HN) vfspath.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) vfspath.cpp -o $(OBJDIR)/vfspath.o
+	
+$(OBJDIR)/vfs-smb.o: $(HW) $(HS) $(HN) vfs-smb.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) vfs-smb.cpp -o $(OBJDIR)/vfs-smb.o
+	
+	
+$(OBJDIR)/tcp_sock.o: $(HW) $(HS) $(HN) tcp_sock.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) tcp_sock.cpp -o $(OBJDIR)/tcp_sock.o
+	
+$(OBJDIR)/search-dlg.o: $(HW) $(HS) $(HN) search-dlg.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) search-dlg.cpp -o $(OBJDIR)/search-dlg.o
+	
+$(OBJDIR)/search-tools.o: $(HW) $(HS) $(HN) search-tools.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) search-tools.cpp -o $(OBJDIR)/search-tools.o
+
+$(OBJDIR)/shell-tools.o: $(HW) $(HS) $(HN) shell-tools.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) shell-tools.cpp -o $(OBJDIR)/shell-tools.o
+
+$(OBJDIR)/vfs-ftp.o: $(HW) $(HS) $(HN) vfs-ftp.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) vfs-ftp.cpp -o $(OBJDIR)/vfs-ftp.o
+		
+$(OBJDIR)/vfs-uri.o: $(HW) $(HS) $(HN) vfs-uri.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) vfs-uri.cpp -o $(OBJDIR)/vfs-uri.o
+
+$(OBJDIR)/vfs-sftp.o: $(HW) $(HS) $(HN) vfs-sftp.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) vfs-sftp.cpp -o $(OBJDIR)/vfs-sftp.o
+
+$(OBJDIR)/vfs-sftp2.o: $(HW) $(HS) $(HN) vfs-sftp2.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) vfs-sftp2.cpp -o $(OBJDIR)/vfs-sftp2.o
+		
+$(OBJDIR)/nchistory.o: $(HW) $(HS) $(HN) nchistory.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) nchistory.cpp -o $(OBJDIR)/nchistory.o
+		
+$(OBJDIR)/unicode_lc.o: $(HW) $(HS) $(HN) unicode_lc.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) unicode_lc.cpp -o $(OBJDIR)/unicode_lc.o
+
+$(OBJDIR)/fileopers.o: $(HW) $(HS) $(HN) fileopers.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) fileopers.cpp -o $(OBJDIR)/fileopers.o
+	
+	
+$(OBJDIR)/ncdialogs.o: $(HW) $(HS) $(HN) ncdialogs.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) ncdialogs.cpp -o $(OBJDIR)/ncdialogs.o
+
+$(OBJDIR)/panel_list.o: $(HW) $(HS) $(HN) panel_list.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) panel_list.cpp -o $(OBJDIR)/panel_list.o
+		
+$(OBJDIR)/panel.o: $(HW) $(HS) $(HN) panel.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) panel.cpp -o $(OBJDIR)/panel.o
+
+$(OBJDIR)/ncedit.o: $(HW) $(HS) $(HN) ncedit.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) ncedit.cpp -o $(OBJDIR)/ncedit.o
+	
+$(OBJDIR)/ncview.o: $(HW) $(HS) $(HN) ncview.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) ncview.cpp -o $(OBJDIR)/ncview.o
+	
+
+$(OBJDIR)/ncwin.o: $(HW) $(HS) $(HN) ncwin.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) ncwin.cpp -o $(OBJDIR)/ncwin.o
+	
+	
+$(OBJDIR)/t-emulator.o: $(HW) $(HS) $(HN) t-emulator.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) t-emulator.cpp -o $(OBJDIR)/t-emulator.o
+
+	
+$(OBJDIR)/terminal.o: $(HW) $(HS) $(HN) terminal.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) terminal.cpp -o $(OBJDIR)/terminal.o
+
+$(OBJDIR)/termwin.o: $(HW) $(HS) $(HN) termwin.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) termwin.cpp -o $(OBJDIR)/termwin.o
+
+$(OBJDIR)/wal_tmpls.o: $(HW) wal/wal_tmpls.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) wal/wal_tmpls.cpp -o $(OBJDIR)/wal_tmpls.o
+
+$(OBJDIR)/wal.o: $(HW) wal/wal.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) wal/wal.cpp -o $(OBJDIR)/wal.o
+
+$(OBJDIR)/wal_charset.o: $(HW) wal/wal_charset.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) wal/wal_charset.cpp -o $(OBJDIR)/wal_charset.o
+
+$(OBJDIR)/wal_sys_api.o: $(HW) wal/wal_sys_api.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) wal/wal_sys_api.cpp -o $(OBJDIR)/wal_sys_api.o
+
+$(OBJDIR)/wal_exceptions.o: $(HW) wal/wal_exceptions.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) wal/wal_exceptions.cpp -o $(OBJDIR)/wal_exceptions.o
+
+$(OBJDIR)/wal_files.o: $(HW) wal/wal_files.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) wal/wal_files.cpp -o $(OBJDIR)/wal_files.o
+
+
+$(OBJDIR)/swl_button.o: $(HW) $(HS) swl/swl_button.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_button.cpp -o $(OBJDIR)/swl_button.o
+
+$(OBJDIR)/swl_editline.o: $(HW) $(HS) swl/swl_editline.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_editline.cpp -o $(OBJDIR)/swl_editline.o
+
+$(OBJDIR)/swl_layout.o: $(HW) $(HS) swl/swl_layout.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_layout.cpp -o $(OBJDIR)/swl_layout.o
+
+
+$(OBJDIR)/swl_menubox.o: $(HW) $(HS) swl/swl_menubox.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_menubox.cpp -o $(OBJDIR)/swl_menubox.o
+
+$(OBJDIR)/swl_popupmenu.o: $(HW) $(HS) swl/swl_popupmenu.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_popupmenu.cpp -o $(OBJDIR)/swl_popupmenu.o
+
+$(OBJDIR)/swl_sbutton.o: $(HW) $(HS) swl/swl_sbutton.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_sbutton.cpp -o $(OBJDIR)/swl_sbutton.o
+
+$(OBJDIR)/swl_scrollbar.o: $(HW) $(HS) swl/swl_scrollbar.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_scrollbar.cpp -o $(OBJDIR)/swl_scrollbar.o
+
+$(OBJDIR)/swl_textlist.o: $(HW) $(HS) swl/swl_textlist.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_textlist.cpp -o $(OBJDIR)/swl_textlist.o
+
+$(OBJDIR)/swl_vlist.o: $(HW) $(HS) swl/swl_vlist.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_vlist.cpp -o $(OBJDIR)/swl_vlist.o
+
+$(OBJDIR)/swl_winbase.o: $(HW) $(HS) swl/swl_winbase.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_winbase.cpp -o $(OBJDIR)/swl_winbase.o
+
+$(OBJDIR)/swl_wincore.o: $(HW) $(HS) swl/swl_wincore.cpp
+	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_wincore.cpp -o $(OBJDIR)/swl_wincore.o
+
+$(OBJDIR)/swl_wincoreUX.o: $(HW) $(HS) swl/swl_wincoreUX.cpp swl/swl_wincore_freetype_inc.h
+	$(CC) $(COPTS) -c $(CFLAGS) swl/swl_wincoreUX.cpp -o $(OBJDIR)/swl_wincoreUX.o
+
+
+$(OBJDIR)/nc.o: $(HW) $(HS) $(HN) nc.cpp intarnal_icons.inc
+	$(CC) $(COPTS) -c $(CFLAGS) nc.cpp -o $(OBJDIR)/nc.o
+
+$(OBJDIR)/shell.o: $(HW) $(HS) $(HN) shell.cpp 
+	$(CC) $(COPTS) -c $(CFLAGS) shell.cpp -o $(OBJDIR)/shell.o
+	
+	
+clean:
+	rm -f *.o
+	rm -f wcm
+	rm -f libconf_ux.h
+	rm -f libtester/libsmbtest
+	rm -f libtester/libsmb40test
+	rm -f libtester/libssh2test
+	rm -f libtester/libfreetype_test
+	rm -f info.txt
+	rm -f makelib.mk
+
+	
+install: wcm
+	cp -f wcm /usr/bin
+	cp -f -R install-files/* /usr
+
+libconf_ux.h: libtester/libconf.create
+	cd libtester &&	./libconf.create

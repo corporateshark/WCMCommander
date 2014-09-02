@@ -28,10 +28,10 @@ namespace wal
 
 
 #ifdef _WIN32
-#define vsnprintf _vsnprintf
+#	define vsnprintf _vsnprintf
 #endif
 
-#ifdef _WIN32
+#if defined(_WIN32) && !defined( __GNUC__ )
 	static int my_new_handler( size_t )
 	{
 		throw_oom();

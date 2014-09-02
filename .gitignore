@@ -39,7 +39,6 @@ Release/
 
 libssh2/dll32/
 
-
-
 *.obj
 *.ncb
+*.exe

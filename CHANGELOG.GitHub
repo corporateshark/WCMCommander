@@ -1,3 +1,40 @@
+0.16.2 GitHub Edition
+	Added: share search text between all search and search-n-replace dialogs
+	Added: indicator of the current sorting order in the panel
+	Added: taskbar hints for the Alt key
+	Added: option 'Select folders'
+	Added: F3 calculates the size of multiple selected folders
+	Added: command line autocomplete
+	Hotket: Shift+Enter to start command without the terminal
+	Hotkey: Ctrl+Tab to switch between editor/viewer and panels
+	Hotkey: Ctrl+O in editor/viewer shows the terminal terminal
+	Hotkey: '5' on numpad calculates the size of the selected files
+	Hotkey: Ctrl+U swap panels
+	Hotkey: Ctrl+Del in the editor
+	Hotkey: Ctrl+BackSpace in the editor
+	Hotkey: Ctrl+[ and Ctrl+] paste a path from the left/right panel to the command line
+	Hotkey: Ctrl+Enter in Alt-search moved to the next file
+	Hotkey: Ctrl+G apply command to the selected files
+	Improved: Alt-search editline repaints correctly
+	Improved: mouse wheel support
+	Improved: FreeBSD support
+	Improved: editor cursor is now Far-like and blinking
+	Improved: save per-file scrolling positions in the editor
+	Improved: inaccessible paths bring you to the root folder or to the drive selection dialog
+	Improved: panel footer text (less garbage, info on free space)
+	Improved: show other panel's full path in the drive selection dialog
+	Fixed: vertical lines in Full panel modes
+	Fixed: command line is now black
+	Fixed: numpad Enter
+	Fixed: cursor position in the panel after deleting files
+	Fixed: switching language while in Alt-search closes the search editline
+	Fixed: bug with the first letter in Alt-search
+	Fixed: save/restore panel paths on Windows
+	Fixed: save the configuration on exit
+	Development: added CMake and Code::Blocks configs
+	Disabled most of the 3D UI
+	Disabled auto indent in the editor
+
 0.16.1 GitHub Edition
 	Save window size & position 
 	Save path in panels

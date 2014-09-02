@@ -388,8 +388,8 @@ void SaveStringList( const char* section, ccollect< std::vector<char> >& list )
 
 #else
 //старый клочек, надо перепроверить
-static char* regapp = "Wal commander";
-static char* regcomp = "Wal";
+static const char* regapp = "Wal commander";
+static const char* regcomp = "Wal";
 
 #define COMPANY regcomp
 #define APPNAME regapp
@@ -633,6 +633,7 @@ WcmConfig::WcmConfig()
 	:  systemAskOpenExec( true ),
 	   systemEscPanel( true ),
 	   systemBackSpaceUpDir( false ),
+		systemAutoComplete( true ),
 	   systemLang( new_char_str( "+" ) ),
 	   showToolBar( true ),
 	   showButtonBar( true ),
@@ -665,6 +666,7 @@ WcmConfig::WcmConfig()
 #endif
 	MapBool( sectionSystem, "esc_panel", &systemEscPanel, systemEscPanel );
 	MapBool( sectionSystem, "back_updir", &systemBackSpaceUpDir, systemBackSpaceUpDir );
+	MapBool( sectionSystem, "auto_complete", &systemAutoComplete, systemAutoComplete );
 	MapStr( sectionSystem,  "lang", &systemLang );
 
 	MapBool( sectionSystem, "show_toolbar", &showToolBar, showToolBar );
@@ -1609,6 +1611,7 @@ public:
 	SButton  askOpenExecButton;
 	SButton  escPanelButton;
 	SButton  backUpDirButton;
+	SButton  autoCompleteButton;
 //	SButton  intLocale;
 
 	StaticLine langStatic;
@@ -1657,6 +1660,7 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	   , askOpenExecButton( 0, this, utf8_to_unicode( _LT( "Ask user if Exec/Open conflict" ) ).data(), 0, wcmConfig.systemAskOpenExec )
 	   , escPanelButton( 0, this, utf8_to_unicode( _LT( "Enable ESC key to show/hide panels" ) ).data(), 0, wcmConfig.systemEscPanel )
 	   , backUpDirButton( 0, this, utf8_to_unicode( _LT( "Enable BACKSPACE key to go up dir" ) ).data(), 0, wcmConfig.systemBackSpaceUpDir )
+	   , autoCompleteButton( 0, this, utf8_to_unicode( _LT( "Enable autocomplete" ) ).data(), 0, wcmConfig.systemAutoComplete )
 //	,intLocale(this, utf8_to_unicode( _LT("Interface localisation (save config and restart)") ).data(), 0, wcmConfig.systemIntLocale)
 	   , langStatic( 0, this, utf8_to_unicode( _LT( "Language:" ) ).data() )
 	   , langVal( 0, this, utf8_to_unicode( "______________________" ).data() )
@@ -1671,18 +1675,25 @@ SysOptDialog::SysOptDialog( NCDialogParent* parent )
 	iL.AddWin( &escPanelButton, 1, 0, 1, 2 );
 	escPanelButton.Enable();
 	escPanelButton.Show();
+
 	iL.AddWin( &backUpDirButton, 2, 0, 2, 2 );
 	backUpDirButton.Enable();
 	backUpDirButton.Show();
+
+	iL.AddWin( &autoCompleteButton, 3, 0, 3, 2 );
+	autoCompleteButton.Enable();
+	autoCompleteButton.Show();
 //	iL.AddWin(&intLocale,      2, 0, 2, 2); intLocale.Enable();  intLocale.Show();
 
-	iL.AddWin( &langStatic,     3, 0 );
+	iL.AddWin( &langStatic,     4, 0 );
 	langStatic.Enable();
 	langStatic.Show();
-	iL.AddWin( &langVal,     3, 2 );
+
+	iL.AddWin( &langVal,     4, 2 );
 	langVal.Enable();
 	langVal.Show();
-	iL.AddWin( &langButton,     3, 1 );
+
+	iL.AddWin( &langButton,     4, 1 );
 	langButton.Enable();
 	langButton.Show();
 	iL.SetColGrowth( 2 );
@@ -1755,6 +1766,7 @@ bool DoSystemConfigDialog( NCDialogParent* parent )
 		wcmConfig.systemAskOpenExec = dlg.askOpenExecButton.IsSet();
 		wcmConfig.systemEscPanel = dlg.escPanelButton.IsSet();
 		wcmConfig.systemBackSpaceUpDir = dlg.backUpDirButton.IsSet();
+		wcmConfig.systemAutoComplete = dlg.autoCompleteButton.IsSet();
 		const char* s = wcmConfig.systemLang.data();
 
 		if ( !s ) { s = "+"; }

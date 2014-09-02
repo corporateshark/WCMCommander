@@ -2,6 +2,8 @@
    Copyright (c) by Valery Goryachev (Wal) 2010
 */
 
+#include <algorithm>
+
 #include <sys/types.h>
 
 #ifdef _WIN32
@@ -38,6 +40,11 @@
 #ifndef _WIN32
 #  include "ux_util.h"
 #endif
+
+template <typename T> void SkipSpaces( T& p )
+{
+	while ( *p == ' ' ) { *p++; }
+}
 
 extern SearchAndReplaceParams searchParams;
 
@@ -90,6 +97,96 @@ int NCCommandLine::UiGetClassId()
 	return uiCommandLine;
 }
 
+bool StartsWithAndNotEqual( const unicode_t* Str, const unicode_t* SubStr )
+{
+	const unicode_t* S = Str;
+	const unicode_t* SS = SubStr;
+
+	while ( *SS != 0 ) if ( *S++ != *SS++ )
+	{
+		return false;
+	}
+
+	if ( *SS == 0 && *S == 0 ) return false;
+
+	return true;
+}
+
+void NCWin::EventSize( cevent_size* pEvent )
+{
+	Win::EventSize( pEvent );
+}
+
+void NCWin::NotifyAutoComplete()
+{
+	std::vector<unicode_t> Text = _edit.GetText();
+
+	this->UpdateAutoComplete( Text );
+}
+
+void NCWin::NotifyAutoCompleteChange()
+{
+	const unicode_t* p = m_AutoCompleteList.GetCurrentString();
+	if ( p && *p ) _edit.SetText( p, false );
+}
+
+void NCWin::UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand )
+{
+	if ( CurrentCommand.empty() || CurrentCommand[0] == 0 || !wcmConfig.systemAutoComplete )
+	{
+		m_AutoCompleteList.Hide( );
+		return;
+	}
+
+	LSRange h( 10, 1000, 10 );
+	LSRange w( 50, 1000, 30 );
+	m_AutoCompleteList.SetHeightRange( h ); //in characters
+	m_AutoCompleteList.SetWidthRange( w ); //in characters
+
+	if ( _history.Count() > 0 && !m_AutoCompleteList.IsVisible() )
+	{
+		m_AutoCompleteList.MoveFirst( 0 );
+		m_AutoCompleteList.MoveCurrent( 0 );
+	}
+
+	const int AutoCompleteMargin = 4;
+	const int AutoCompleteListHeight = 220;
+	const int Bottom = _leftPanel.Rect().bottom - AutoCompleteMargin;
+	crect r;
+	r.left = _editPref.Rect().right;
+	r.top =  Bottom - AutoCompleteListHeight;
+	r.right = Rect( ).right;
+	r.bottom = Bottom;
+	m_AutoCompleteList.Move( r );
+
+	bool HasHistory = false;
+
+	m_AutoCompleteList.Clear();
+	m_AutoCompleteList.Append( 0 ); // empty line goes first
+
+	for ( int i = 0; i < _history.Count(); i++ )
+	{
+		const unicode_t* Hist = _history[i];
+
+		if ( StartsWithAndNotEqual( Hist, CurrentCommand.data() ) )
+		{
+			m_AutoCompleteList.Append( Hist, i );
+			HasHistory = true;
+		}
+	}
+
+	if ( HasHistory )
+	{
+		if ( !m_AutoCompleteList.IsVisible( ) ) m_AutoCompleteList.Show( );
+		m_AutoCompleteList.Invalidate();
+	}
+	else
+	{
+		m_AutoCompleteList.Hide();
+	}
+
+}
+
 NCWin::NCWin()
 	:  NCDialogParent( WT_MAIN, WH_SYSMENU | WH_RESIZE | WH_MINBOX | WH_MAXBOX | WH_USEDEFPOS, uiClassNCWin, 0, &acWinRect ),
 	   _lo( 5, 1 ),
@@ -103,6 +200,7 @@ NCWin::NCWin()
 
 	   _edit( uiCommandLine, this, 0, 0, 10, false ),
 	   _editPref( this ),
+		_activityNotification( this ),
 	   _panel( &_leftPanel ),
 	   _menu( 0, this ),
 	   _toolBar( this, 0, 16 ),
@@ -113,14 +211,27 @@ NCWin::NCWin()
 	   _editor( this ),
 	   _ehWin( this, &_editor ),
 	   _execId( -1 ),
-	   _shiftSelectType( -1 )
+	   _shiftSelectType( -1 ),
+		m_AutoCompleteList( Win::WT_CHILD, Win::WH_TABFOCUS | WH_CLICKFOCUS, 0, this, VListWin::SINGLE_SELECT, VListWin::BORDER_3D, NULL )
 {
+	m_BackgroundActivity = eBackgroundActivity_None;
+
 	_execSN[0] = 0;
 
 	_editPref.Show();
 	_editPref.Enable();
 	_leftPanel.OnTop();
 	_rightPanel.OnTop();
+
+	m_AutoCompleteList.Enable();
+	m_AutoCompleteList.Hide();
+	m_AutoCompleteList.OnTop();
+	m_AutoCompleteList.SetFocus();
+
+	_activityNotification.Set( utf8_to_unicode( "[0+1]" ).data( ) );
+	_activityNotification.Hide();
+	_activityNotification.Enable();
+	_activityNotification.OnTop();
 
 	if ( wcmConfig.showButtonBar )
 	{
@@ -168,8 +279,11 @@ NCWin::NCWin()
 	_lo.AddWin( &_viewer, 2, 0, 3, 0 );
 	_lo.AddWin( &_editor, 2, 0, 3, 0 );
 	_lo.SetLineGrowth( 2 );
+
 	_lpanel.AddWin( &_leftPanel, 0, 0 );
 	_lpanel.AddWin( &_rightPanel, 0, 1 );
+	_lpanel.AddWin( &_activityNotification, 0, 0 );
+	_lo.AddWin( &m_AutoCompleteList, 0, 1 );
 	_lo.AddLayout( &_lpanel, 2, 0 );
 
 	_buttonWin.Set( panelNormalButtons );
@@ -416,6 +530,9 @@ void NCWin::SetMode( MODE m )
 	}
 
 	_mode = m;
+
+	UpdateActivityNotification();
+
 	RecalcLayouts();
 }
 
@@ -512,7 +629,6 @@ void NCWin::PanelEnter()
 			if ( ret == CMD_OPEN_FILE )
 			{
 #ifndef _WIN32
-
 				if ( !terminal )
 				{
 					ExecNoTerminalProcess( cmd.data() );
@@ -520,9 +636,7 @@ void NCWin::PanelEnter()
 				};
 
 #endif
-
 				StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
-
 				return;
 			}
 		}
@@ -540,13 +654,11 @@ void NCWin::PanelEnter()
 	if ( cmd.data() )
 	{
 #ifndef _WIN32
-
 		if ( !terminal )
 		{
 			ExecNoTerminalProcess( cmd.data() );
 			return;
 		}
-
 #endif
 
 		StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
@@ -640,7 +752,6 @@ void NCWin::RightButtonPressed( cpoint point )
 
 
 #ifndef _WIN32
-
 	if ( !data.nodeList[ret].terminal )
 	{
 		ExecNoTerminalProcess( data.nodeList[ret].cmd );
@@ -1085,6 +1196,71 @@ void NCWin::SelectDrive( PanelWin* p, PanelWin* OtherPanel )
 	};
 }
 
+std::vector<unicode_t>::iterator FindSubstr( const std::vector<unicode_t>::iterator& begin, const std::vector<unicode_t>::iterator& end, const std::vector<unicode_t>& SubStr )
+{
+	if ( begin >= end ) return end;
+
+	return std::search( begin, end, SubStr.begin(), SubStr.end() );
+}
+
+std::vector<unicode_t> MakeCommand( const std::vector<unicode_t>& cmd, const unicode_t* FileName )
+{
+	std::vector<unicode_t> Result( cmd );
+	std::vector<unicode_t> Name = new_unicode_str( FileName );
+
+	if ( Name.size() && Name.back() == 0 ) Name.pop_back();
+
+	std::vector<unicode_t> Mask;
+	Mask.push_back( '!' );
+	Mask.push_back( '.' );
+	Mask.push_back( '!' );	
+
+	auto pos = FindSubstr( Result.begin(), Result.end(), Mask );
+
+	while ( pos != Result.end() )
+	{
+		pos = Result.erase( pos, pos + Mask.size() );
+		size_t idx = pos - Result.begin();
+		Result.insert( pos, Name.begin(), Name.end() );
+		pos = Result.begin() + idx;
+		pos = FindSubstr( pos + Name.size(), Result.end(), Mask );
+	}
+
+	return Result;
+}
+
+void NCWin::ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList> list, PanelWin* Panel )
+{
+	if ( !cmd.data() ) { return; }
+	if ( !list.ptr() || list->Count() <= 0 ) { return; }
+
+	std::vector<FSNode*> nodes = list->GetArray();
+
+	SetMode( TERMINAL );
+
+	for ( auto i = nodes.begin(); i != nodes.end(); i++ )
+	{
+		FSNode* Node = *i;
+
+		const unicode_t* Name = Node->GetUnicodeName();
+
+		std::vector<unicode_t> Command = MakeCommand( cmd, Name );
+
+		StartExecute( Command.data( ), Panel->GetFS( ), Panel->GetPath( ) );
+	}
+
+	SetMode( PANEL );
+}
+
+void NCWin::ApplyCommand()
+{
+	if ( _mode != PANEL ) { return; }
+
+	std::vector<unicode_t> command = InputStringDialog( this, utf8_to_unicode( _LT( "Apply command to the selected files" ) ).data() );
+
+	ApplyCommandToList( command, _panel->GetSelectedList(), _panel );
+}
+
 void NCWin::CreateDirectory()
 {
 	if ( _mode != PANEL ) { return; }
@@ -1178,6 +1354,8 @@ void NCWin::View()
 			return;
 		};
 
+		SetBackgroundActivity( eBackgroundActivity_Viewer );
+
 		SetMode( VIEW );
 
 		_viewer.SetFile( fs, path, p->Size() );
@@ -1192,6 +1370,8 @@ void NCWin::View()
 
 void NCWin::ViewExit()
 {
+	SetBackgroundActivity( eBackgroundActivity_None );
+
 	if ( _mode != VIEW ) { return; }
 
 	//...
@@ -1257,6 +1437,8 @@ void NCWin::Edit( bool enterFileName )
 			_editor.SetCursorPos( EditPoint( 0, 0 ) );
 		}
 
+		SetBackgroundActivity( eBackgroundActivity_Editor );
+
 		SetMode( EDIT );
 
 	}
@@ -1309,6 +1491,8 @@ void  NCWin::PasteFileNameToCommandLine( const unicode_t* path )
 		if ( spaces ) { _edit.Insert( '"' ); }
 
 		_edit.Insert( ' ' );
+
+		NotifyAutoComplete();
 	}
 }
 
@@ -1353,6 +1537,8 @@ void NCWin::CtrlF()
 		if ( spaces ) { _edit.Insert( '"' ); }
 
 		_edit.Insert( ' ' );
+
+		NotifyAutoComplete();
 	}
 }
 
@@ -1371,6 +1557,8 @@ void NCWin::HistoryDialog()
 	if ( !s ) { return; }
 
 	_edit.SetText( s );
+
+	NotifyAutoComplete( );
 }
 
 
@@ -1727,6 +1915,8 @@ void NCWin::ViewSearch( bool next )
 
 void NCWin::EditExit()
 {
+	SetBackgroundActivity( eBackgroundActivity_None );
+
 	if ( _mode != EDIT ) { return; }
 
 	clPtr<FS> fs = _editor.GetFS();
@@ -1772,7 +1962,7 @@ void NCWin::ViewCharsetTable()
 
 #ifndef _WIN32
 
-void NCWin::ExecNoTerminalProcess( unicode_t* p )
+void NCWin::ExecNoTerminalProcess( const unicode_t* p )
 {
 	_history.Put( p );
 	const unicode_t* pref = _editPref.Get();
@@ -1789,8 +1979,7 @@ void NCWin::ExecNoTerminalProcess( unicode_t* p )
 	_terminal.TerminalPrint( p, fg, bg );
 	_terminal.TerminalPrint( newLine, fg, bg );
 
-
-	while ( *p == ' ' ) { p++; }
+	SkipSpaces( p );
 
 	if ( !*p ) { return; }
 
@@ -1840,6 +2029,8 @@ void NCWin::ExecNoTerminalProcess( unicode_t* p )
 
 void NCWin::Tab( bool forceShellTab )
 {
+	m_AutoCompleteList.Hide();
+
 	if ( _mode != PANEL ) { return; }
 
 	if ( _panelVisible && !forceShellTab )
@@ -1935,6 +2126,229 @@ void NCWin::CheckKM( bool ctrl, bool alt, bool shift, bool pressed, int ks )
 	}
 }
 
+void NCWin::UpdateActivityNotification()
+{
+	if ( m_BackgroundActivity == eBackgroundActivity_None )
+	{
+		_activityNotification.Hide();
+	}
+	else
+	{
+		_activityNotification.Show();
+	}
+
+	if ( _mode != PANEL ) _activityNotification.Hide();
+}
+
+void NCWin::SetBackgroundActivity( eBackgroundActivity BackgroundActivity )
+{
+	m_BackgroundActivity = BackgroundActivity;
+
+	UpdateActivityNotification();
+}
+
+void NCWin::SwitchToBackgroundActivity()
+{
+	m_AutoCompleteList.Hide();
+
+	switch ( m_BackgroundActivity )
+	{
+	case eBackgroundActivity_None:
+		break;
+	case eBackgroundActivity_Editor:
+		SetMode( EDIT );
+		break;
+	case eBackgroundActivity_Viewer:
+		SetMode( VIEW );
+		break;
+	}
+}
+
+NCCommandLine::NCCommandLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars = 10, bool frame = true )
+: EditLine( nId, parent, rect, txt, chars, frame )
+{
+}
+
+bool NCCommandLine::EventKey( cevent_key* pEvent )
+{
+	bool Result = EditLine::EventKey( pEvent );
+
+	NCWin* p = ( NCWin* )Parent();
+
+	bool Pressed = pEvent->Type( ) == EV_KEYDOWN;
+
+	if ( p && Pressed ) p->NotifyAutoComplete();
+	
+	return Result;
+}
+
+NCAutocompleteList::NCAutocompleteList( WTYPE t, unsigned hints, int nId, Win* _parent, SelectType st, BorderType bt, crect* rect )
+: TextList( t, hints, nId, _parent, st, bt, rect )
+{
+}
+
+bool NCAutocompleteList::EventKey( cevent_key* pEvent )
+{
+	bool Result = TextList::EventKey( pEvent );
+
+	NCWin* Win = ( NCWin* )Parent();
+
+	Win->NotifyAutoCompleteChange();
+
+	return Result;
+}
+
+bool NCAutocompleteList::EventMouse( cevent_mouse* pEvent )
+{
+	bool Result = TextList::EventMouse( pEvent );
+
+	NCWin* Win = ( NCWin* )Parent();
+
+	Win->NotifyAutoCompleteChange();
+
+	return Result;
+}
+
+
+std::vector<unicode_t> NCWin::FetchAndClearCommandLine()
+{
+	std::vector<unicode_t> txt = _edit.GetText();
+
+	_edit.Clear();
+
+	return txt;
+}
+
+bool IsCommand_CD( const unicode_t* p )
+{
+#ifdef _WIN32
+	return ( p[0] == 'c' || p[0] == 'C' ) && ( p[1] == 'd' || p[1] == 'D' ) && ( !p[2] || p[2] == ' ' );
+#else
+	return ( p[0] == 'c' && p[1] == 'd' && ( !p[2] || p[2] == ' ' ) );
+#endif
+}
+
+bool NCWin::StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTerminal )
+{
+	const unicode_t* p = cmd.data();
+
+	SkipSpaces( p );
+
+	printf( "StartCommand %s, %i\n", (const char*)p, (int)ForceNoTerminal );
+
+	if ( !*p ) return false;
+
+	if ( *p )
+	{
+		if ( IsCommand_CD( p ) )
+		{
+			// make a mutable copy
+			std::vector<unicode_t> copy( cmd );
+
+			unicode_t* p = copy.data();
+
+			//change dir
+			_history.Put( p );
+			p += 2;
+
+			SkipSpaces( p );
+
+			std::vector<unicode_t> uHome;
+
+			if ( !*p )
+			{
+				const sys_char_t* home = ( sys_char_t* ) getenv( "HOME" );
+
+				if ( home )
+				{
+					uHome = sys_to_unicode_array( home );
+					p = uHome.data();
+				}
+			}
+
+			unicode_t* lastNoSpace = 0;
+
+			for ( unicode_t* s = p; *s; s++ )
+			{
+				if ( *s != ' ' ) { lastNoSpace = s; }
+			}
+
+			if ( lastNoSpace ) { lastNoSpace[1] = 0; } //erase last spaces
+
+			clPtr<FS> checkFS[2];
+			checkFS[0] = _panel->GetFSPtr();
+			checkFS[1] = GetOtherPanel()->GetFSPtr();
+
+			FSPath path = _panel->GetPath();
+
+			ccollect<unicode_t, 0x100> pre;
+			int sc = 0;
+
+			while ( *p )
+			{
+				if ( sc )
+				{
+					if ( *p == sc ) { sc = 0;  p++; continue; }
+				}
+				else if ( *p == '\'' || *p == '"' )
+				{
+					sc = *p;
+					p++;
+					continue;
+				}
+#ifndef _WIN32
+				if ( *p == '\\' && !sc ) { p++; }
+#endif
+				if ( !p ) { break; }
+
+				pre.append( *p );
+				p++;
+			}
+
+			pre.append( 0 );
+			p = pre.ptr();
+
+			clPtr<FS> fs = ParzeURI( p, path, checkFS, 2 );
+
+			if ( fs.IsNull() )
+			{
+				char buf[4096];
+				FSString name = p;
+				snprintf( buf, sizeof( buf ), _LT( "can`t change directory to:%s\n" ), name.GetUtf8() );
+				NCMessageBox( this, "CD", buf, true );
+			}
+			else
+			{
+				_panel->LoadPath( fs, path, 0, 0, PanelWin::SET );
+			}
+		}
+		else
+		{
+#ifndef _WIN32
+			if ( p[0] == '&' || ForceNoTerminal )
+			{
+				_history.Put( p );
+				if ( p[0] == '&' ) p++;
+				ExecNoTerminalProcess( p );
+			}
+			else
+#endif
+			{
+				FS* fs = _panel->GetFS();
+				if ( fs && fs->Type() == FS::SYSTEM )
+				{
+					StartExecute( cmd.data(), _panel->GetFS(), _panel->GetPath() );
+				}
+				else
+				{
+					NCMessageBox( this, _LT( "Execute" ), _LT( "Can`t execute command in non system fs" ), true );
+				}
+			}
+		}
+	}
+
+	return true;
+}
 
 bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 {
@@ -1975,6 +2389,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 	{
 		if ( !pressed ) { return false; }
 
+		if ( pEvent->Key() == VK_TAB && ( pEvent->Mod() & KM_CTRL ) )
+		{
+			SwitchToBackgroundActivity();
+		}
 
 		if ( pEvent->Key() == VK_O && ( pEvent->Mod() & KM_CTRL ) )
 		{
@@ -2013,12 +2431,26 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			switch ( fullKey )
 			{
 				case FC( VK_DOWN, KM_SHIFT ):
+					_panel->KeyDown( shift, &_shiftSelectType );
+					return true;
 				case VK_DOWN:
+					if ( m_AutoCompleteList.IsVisible() )
+					{
+						m_AutoCompleteList.EventKey( pEvent );
+						return true;
+					}
 					_panel->KeyDown( shift, &_shiftSelectType );
 					return true;
 
 				case FC( VK_UP, KM_SHIFT ):
+					_panel->KeyUp( shift, &_shiftSelectType );
+					return true;
 				case VK_UP:
+					if ( m_AutoCompleteList.IsVisible() )
+					{
+						m_AutoCompleteList.EventKey( pEvent );
+						return true;
+					}
 					_panel->KeyUp( shift, &_shiftSelectType );
 					return true;
 
@@ -2142,11 +2574,21 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			case FC( VK_X, KM_CTRL ):
 			case VK_DOWN:
+				if ( m_AutoCompleteList.IsVisible() )
+				{
+					m_AutoCompleteList.EventKey( pEvent );
+					break;
+				}
 				_edit.SetText( _history.Next() );
 				break;
 
 			case FC( VK_E, KM_CTRL ):
 			case VK_UP:
+				if ( m_AutoCompleteList.IsVisible() )
+				{
+					m_AutoCompleteList.EventKey( pEvent );
+					break;
+				}
 				_edit.SetText( _history.Prev() );
 				break;
 
@@ -2185,7 +2627,11 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 			}
 
 			case VK_ESCAPE:
-				if ( wcmConfig.systemEscPanel )
+				if ( m_AutoCompleteList.IsVisible() )
+				{
+					m_AutoCompleteList.Hide();
+				}
+				else if ( wcmConfig.systemEscPanel )
 				{
 					if ( _edit.IsVisible() && !_edit.IsEmpty() )
 					{
@@ -2198,11 +2644,12 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 						break;
 					}
 				}
+				break;
 
-				//! no break
 			case FC( VK_ESCAPE, KM_SHIFT ):
 			case FC( VK_ESCAPE, KM_CTRL ):
 			case FC( VK_ESCAPE, KM_ALT ):
+				m_AutoCompleteList.Hide();
 
 				if ( !_edit.InFocus() )
 				{
@@ -2288,145 +2735,28 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				Tab( true );
 				break;
 
+			case FC( VK_NUMPAD_RETURN, KM_SHIFT ):
+			case FC( VK_RETURN, KM_SHIFT ):
+			{
+				m_AutoCompleteList.Hide();
+				if ( _edit.IsVisible() )
+				{
+					if ( StartCommand( FetchAndClearCommandLine(), true ) ) break;
+				}
+				if ( _panelVisible ) PanelEnter();
+				break;
+			}
 			case VK_NUMPAD_RETURN:
 			case VK_RETURN:
 			{
+				m_AutoCompleteList.Hide();
 				if ( _edit.IsVisible() )
 				{
-					std::vector<unicode_t> txt = _edit.GetText();
-					unicode_t* p = txt.data();
-
-					while ( *p == ' ' ) { p++; }
-
-					if ( *p )
-					{
-
-						_edit.Clear();
-#ifdef _WIN32
-
-						if ( ( p[0] == 'c' || p[0] == 'C' ) && ( p[1] == 'd' || p[1] == 'D' ) && ( !p[2] || p[2] == ' ' ) )
-#else
-						if ( p[0] == 'c' && p[1] == 'd' && ( !p[2] || p[2] == ' ' ) )
-#endif
-						{
-							//change dir
-							_history.Put( p );
-							p += 2;
-
-							while ( *p == ' ' ) { p++; }
-
-							std::vector<unicode_t> uHome;
-
-							if ( !*p )
-							{
-								const sys_char_t* home = ( sys_char_t* ) getenv( "HOME" );
-
-								if ( home )
-								{
-									uHome = sys_to_unicode_array( home );
-									p = uHome.data();
-								}
-							}
-
-							unicode_t* lastNoSpace = 0;
-
-							for ( unicode_t* s = p; *s; s++ )
-								if ( *s != ' ' ) { lastNoSpace = s; }
-
-							if ( lastNoSpace ) { lastNoSpace[1] = 0; } //erase last spaces
-
-							clPtr<FS> checkFS[2];
-							checkFS[0] = _panel->GetFSPtr();
-							checkFS[1] = GetOtherPanel()->GetFSPtr();
-
-							FSPath path = _panel->GetPath();
-
-
-							ccollect<unicode_t, 0x100> pre;
-							int sc = 0;
-
-							while ( *p )
-							{
-								if ( sc )
-								{
-									if ( *p == sc ) { sc = 0;  p++; continue; }
-								}
-								else if ( *p == '\'' || *p == '"' )
-								{
-									sc = *p;
-									p++;
-									continue;
-								}
-
-#ifndef _WIN32
-
-								if ( *p == '\\' && !sc ) { p++; }
-
-#endif
-
-								if ( !p ) { break; }
-
-								pre.append( *p );
-								p++;
-							}
-
-							pre.append( 0 );
-							p = pre.ptr();
-
-
-							clPtr<FS> fs = ParzeURI( p, path, checkFS, 2 );
-
-							if ( fs.IsNull() )
-							{
-								char buf[4096];
-								FSString name = p;
-								snprintf( buf, sizeof( buf ), _LT( "can`t change directory to:%s\n" ),
-								          name.GetUtf8() );
-								NCMessageBox( this, "CD", buf, true );
-							}
-							else
-							{
-								_panel->LoadPath( fs, path, 0, 0, PanelWin::SET );
-							}
-
-							break;
-						}
-						else
-						{
-#ifndef _WIN32
-
-							if ( p[0] == '&' ) //запуск без терминала
-							{
-								_history.Put( p );
-								p++;
-								ExecNoTerminalProcess( p );
-								break;
-							}
-
-#endif
-							FS* fs = _panel->GetFS();
-
-							if ( fs && fs->Type() == FS::SYSTEM )
-							{
-								StartExecute( txt.data(), _panel->GetFS(), _panel->GetPath() );
-							}
-							else
-							{
-								NCMessageBox( this, _LT( "Execute" ), _LT( "Can`t execute command in non system fs" ), true );
-							}
-
-						}
-
-						break;
-					};
+					if ( StartCommand( FetchAndClearCommandLine(), false ) ) break;
 				}
-
-				if ( _panelVisible )
-				{
-					PanelEnter();
-				}
+				if ( _panelVisible ) PanelEnter();
+				break;
 			}
-			break;
 
 			case VK_F1:
 				Help( this, "main" );
@@ -2489,6 +2819,10 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 				CreateDirectory();
 				break;
 
+			case FC( VK_G, KM_CTRL ):
+				ApplyCommand();
+				break;
+
 			case FC( VK_F8, KM_ALT ):
 			case FC( VK_F8, KM_SHIFT ):
 				HistoryDialog();
@@ -2545,6 +2879,14 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 		switch ( fullKey )
 		{
+			case FC( VK_O, KM_CTRL ):
+			case VK_ESCAPE:
+			{
+				m_AutoCompleteList.Hide();
+				if ( pressed ) SwitchToBackgroundActivity();					
+				return true;
+			}
+
 			case FC( VK_INSERT, KM_SHIFT ):
 				if ( pressed ) { _terminal.Paste(); }
 
@@ -2593,7 +2935,12 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			switch ( fullKey )
 			{
-
+				case FC( VK_TAB, KM_CTRL ):
+					SetMode( PANEL );
+					break;
+				case FC( VK_O, KM_CTRL ):
+					SetMode( TERMINAL );
+					break;
 				case VK_F4:
 				case VK_F10:
 				case VK_ESCAPE:
@@ -2661,7 +3008,9 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 				switch ( fullKey )
 				{
-
+					case FC( VK_O, KM_CTRL ):
+						SetMode( TERMINAL );
+						break;
 					case VK_F3:
 					case VK_F10:
 					case VK_ESCAPE:
@@ -3426,7 +3775,7 @@ void StringWin::OnChangeStyles()
 	defaultGC->Set( GetFont() );
 	textSize = defaultGC->GetTextExtents( text.data() );
 	LSize ls( textSize );
-	ls.y.maximal = 1000;
+	ls.y.maximal = textSize.y;
 	ls.x.maximal = textSize.x;
 	SetLSize( ls );
 }

@@ -1,4 +1,4 @@
-         Wal commander 0.16.1 GitHub Edition
+         Wal commander 0.16.2 GitHub Edition
     https://github.com/corporateshark/WalCommander
 =======================================================
 

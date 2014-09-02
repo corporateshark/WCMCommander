@@ -1,0 +1,17 @@
+Source: wcm
+Section: unknown
+Priority: optional
+Maintainer: Sergey Kosarevsky <sk@linderdaum.com>
+Build-Depends: debhelper (>= 8.0.0), cmake, libfreetype6, libsmbclient-dev, libssh2-1-dev
+Standards-Version: 3.9.4
+Homepage: https://github.com/corporateshark/WalCommander
+#Vcs-Git: git://git.debian.org/collab-maint/wcm.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/wcm.git;a=summary
+
+Package: wcm
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Wal Commander GitHub Edition dual panel file manager.
+ The purpose of this project is to create a multi-platform open source dual panel file manager
+ (Windows, Linux, FreeBSD, OS X) mimicking the look-n-feel of Far Manager.
+ Currently Wal Commander runs on Windows, Linux and FreeBSD.

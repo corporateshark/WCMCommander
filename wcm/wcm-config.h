@@ -35,6 +35,7 @@ struct WcmConfig
 	bool systemAskOpenExec;
 	bool systemEscPanel;
 	bool systemBackSpaceUpDir;
+	bool systemAutoComplete;
 	std::vector<char> systemLang; //"+" - auto "-" -internal eng.
 
 	bool showToolBar;

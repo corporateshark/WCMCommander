@@ -178,10 +178,24 @@ public:
 class NCCommandLine: public EditLine
 {
 public:
-	NCCommandLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars = 10, bool frame = true )
-		: EditLine( nId, parent, rect, txt, chars, frame )
-	{}
-	int UiGetClassId();
+	NCCommandLine( int nId, Win* parent, const crect* rect, const unicode_t* txt, int chars, bool frame );
+	int UiGetClassId() override;
+	bool EventKey( cevent_key* pEvent ) override;
+};
+
+class NCAutocompleteList: public TextList
+{
+public:
+	NCAutocompleteList( WTYPE t, unsigned hints, int nId, Win* _parent, SelectType st, BorderType bt, crect* rect );
+	virtual bool EventKey( cevent_key* pEvent ) override;
+	virtual bool EventMouse( cevent_mouse* pEvent ) override;
+};
+
+enum eBackgroundActivity
+{
+	eBackgroundActivity_None,
+	eBackgroundActivity_Viewer,
+	eBackgroundActivity_Editor,
 };
 
 class NCWin: public NCDialogParent
@@ -196,6 +210,10 @@ private:
 	PanelWin _leftPanel,
 	         _rightPanel;
 
+	NCAutocompleteList m_AutoCompleteList;
+
+	void UpdateAutoComplete( const std::vector<unicode_t>& CurrentCommand );
+
 	NCCommandLine _edit;
 #ifdef _WIN32
 	W32Cons
@@ -203,6 +221,14 @@ private:
 	TerminalWin
 #endif
 	_terminal;
+
+	eBackgroundActivity m_BackgroundActivity;
+
+	void UpdateActivityNotification();
+	void SetBackgroundActivity( eBackgroundActivity m_BackgroundActivity );
+	void SwitchToBackgroundActivity();
+
+	StringWin _activityNotification;
 
 	StringWin _editPref;
 	PanelWin* _panel;
@@ -246,11 +272,13 @@ private:
 
 	void PanelEnter();
 
+	void ApplyCommandToList( const std::vector<unicode_t>& cmd, clPtr<FSList> list, PanelWin* Panel );
 	void StartExecute( const unicode_t* cmd, FS* fs, FSPath& path );
 	void ReturnToDefaultSysDir(); // !!!
 
 	void Home( PanelWin* p );
 
+	void ApplyCommand();
 	void CreateDirectory();
 	void View();
 	void ViewExit();
@@ -306,7 +334,7 @@ private:
 	}
 
 #ifndef _WIN32
-	void ExecNoTerminalProcess( unicode_t* p );
+	void ExecNoTerminalProcess( const unicode_t* p );
 #endif
 
 	void RightButtonPressed( cpoint point ); //вызывается из панели, усли попало на имя файла/каталого
@@ -316,11 +344,15 @@ private:
 	int _execId;
 	unicode_t _execSN[64];
 
+	std::vector<unicode_t> FetchAndClearCommandLine();
+	bool StartCommand( const std::vector<unicode_t>& cmd, bool ForceNoTerminal );
+
 public:
 	NCWin();
 	bool OnKeyDown( Win* w, cevent_key* pEvent, bool pressed );
 	virtual bool EventChildKey( Win* child, cevent_key* pEvent );
 	virtual bool EventKey( cevent_key* pEvent );
+	virtual void EventSize( cevent_size* pEvent );
 	virtual void ThreadStopped( int id, void* data );
 	virtual void ThreadSignal( int id, int data );
 	virtual bool Command( int id, int subId, Win* win, void* data );
@@ -332,6 +364,9 @@ public:
 
 	PanelWin* GetLeftPanel() { return &_leftPanel; }
 	PanelWin* GetRightPanel() { return &_rightPanel; }
+
+	void NotifyAutoComplete();
+	void NotifyAutoCompleteChange();
 };
 
 
