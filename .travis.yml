@@ -2,27 +2,30 @@ language: cpp
 
 env:
   global:
-   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
-   #   via the "travis encrypt" command using the project repo's public key
-   - secure: "TmZV+akBvfWnMymseGFiZFq3lhwAwSQdt8vinJl/0W2Xxj5T0Muusvu0RR4LdR20sXiecL3LFFKXQEyfB7p82quxxQiP0R5vNtcHArBP7nuTpi/c/s6A1A6qCM6KdkgMFWdvJlJgSoUqSjMsBhVVbaJVxgxxyYPJDuuZsCgjd6I="
+    # Variables for Coverity scan
+    - secure: "TmZV+akBvfWnMymseGFiZFq3lhwAwSQdt8vinJl/0W2Xxj5T0Muusvu0RR4LdR20sXiecL3LFFKXQEyfB7p82quxxQiP0R5vNtcHArBP7nuTpi/c/s6A1A6qCM6KdkgMFWdvJlJgSoUqSjMsBhVVbaJVxgxxyYPJDuuZsCgjd6I="
+    - STANDARD_BUILD_COMMAND="make all -B"
+    - PROJECT_NAME="corporateshark/WalCommander"
+    - OWNER_EMAIL="konstantin.kuklin@gmail.com"
+    # Regular expression selects on which branches to run analysis
+    # Be aware of quotas. Do not run on every branch/commit
+    - COVERITY_SCAN_BRANCH_PATTERN="coverity_scan"
 
-addons:
-  coverity_scan:
-    project:
-      name: "corporateshark/WalCommander"
-      description: "File Manager"
-    notification_email: konstantin.kuklin@gmail.com
-    build_command_prepend: 
-        - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
-        - sudo apt-get update
-        - sudo apt-get install gcc-4.8 g++-4.8
-        - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 20
-        - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 20
-        - sudo update-alternatives --config gcc
-        - sudo update-alternatives --config g++
-        - cd ./wcm
-    build_command: make all -B
-    branch_pattern: coverity_scan
+    # Optionally execute a command immediately before cov-build, i.e.
+    #   pre-configuration required for the COVERITY_SCAN_BUILD_COMMAND
+    - COVERITY_SCAN_BUILD_COMMAND_PREPEND=""
+
+    # Insert the cov-build build commmand here
+    - COVERITY_SCAN_BUILD_COMMAND=$STANDARD_BUILD_COMMAND
+
+    # COVERITY_SCAN_TOKEN via "travis encrypt" using the repo's public key
+    - secure: "H63P4YUW06rJCE+baggJpyx+thVj8t5TTEjgl3bbHP6X7k9CB3SC6D4gJKstUrZ+VI+Xf/as15Fxy+9ba+jrA6c+P8W6UCuOlFAdZWfjghoUpxNRoBdX37pYTXR9rZbbkKdQTTeIArXbTRuw2etBv4PlD1YIMCLdGUqKAzqIk7A="
+
+    # ---- END Project-specific configuration
+
+    - COVERITY_SCAN_BUILD_URL="https://gist.githubusercontent.com/KonstantinKuklin/63df870cb63519d49bce/raw"
+    - COVERITY_SCAN_BUILD="curl -s $COVERITY_SCAN_BUILD_URL | bash"
+    
     
 before_script:
     - gcc -v
@@ -41,4 +44,4 @@ compiler:
     - clang
 
 script:
-    - make all -B && mkdir build && cd build && cmake -DWITH_FREETYPE=YES -DWITH_LIBSSH2=NO -DWITH_SMBCLIENT=NO .. && make # tests both cmake and custom builds
+    - eval "$COVERITY_SCAN_BUILD"
