@@ -1,5 +1,29 @@
 language: cpp
 
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "TmZV+akBvfWnMymseGFiZFq3lhwAwSQdt8vinJl/0W2Xxj5T0Muusvu0RR4LdR20sXiecL3LFFKXQEyfB7p82quxxQiP0R5vNtcHArBP7nuTpi/c/s6A1A6qCM6KdkgMFWdvJlJgSoUqSjMsBhVVbaJVxgxxyYPJDuuZsCgjd6I="
+
+addons:
+  coverity_scan:
+    project:
+      name: "corporateshark/WalCommander"
+      description: "File Manager"
+    notification_email: konstantin.kuklin@gmail.com
+    build_command_prepend: 
+        - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
+        - sudo apt-get update
+        - sudo apt-get install gcc-4.8 g++-4.8
+        - sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 20
+        - sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.8 20
+        - sudo update-alternatives --config gcc
+        - sudo update-alternatives --config g++
+        - cd ./wcm
+    build_command: make all -B
+    branch_pattern: coverity_scan
+    
 before_script:
     - gcc -v
     - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
