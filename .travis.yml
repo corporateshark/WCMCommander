@@ -1,5 +1,32 @@
 language: cpp
 
+env:
+  global:
+    # Variables for Coverity scan
+    - secure: "TmZV+akBvfWnMymseGFiZFq3lhwAwSQdt8vinJl/0W2Xxj5T0Muusvu0RR4LdR20sXiecL3LFFKXQEyfB7p82quxxQiP0R5vNtcHArBP7nuTpi/c/s6A1A6qCM6KdkgMFWdvJlJgSoUqSjMsBhVVbaJVxgxxyYPJDuuZsCgjd6I="
+    - STANDARD_BUILD_COMMAND="make all -B"
+    - COVERITY_SCAN_PROJECT_NAME="corporateshark%2FWalCommander"
+    - COVERITY_SCAN_NOTIFICATION_EMAIL="konstantin.kuklin@gmail.com"
+    # Regular expression selects on which branches to run analysis
+    # Be aware of quotas. Do not run on every branch/commit
+    - COVERITY_SCAN_BRANCH_PATTERN="coverity_scan"
+
+    # Optionally execute a command immediately before cov-build, i.e.
+    # pre-configuration required for the COVERITY_SCAN_BUILD_COMMAND
+    - COVERITY_SCAN_BUILD_COMMAND_PREPEND=""
+
+    # Insert the cov-build build commmand here
+    - COVERITY_SCAN_BUILD_COMMAND=$STANDARD_BUILD_COMMAND
+
+    # COVERITY_SCAN_TOKEN via "travis encrypt" using the repo's public key
+    - COVERITY_SCAN_TOKEN: "_x7cJjh1irddf1NDaMjTEQ"
+
+    # ---- END Project-specific configuration
+
+    - COVERITY_SCAN_BUILD_URL="https://gist.githubusercontent.com/KonstantinKuklin/63df870cb63519d49bce/raw"
+    - COVERITY_SCAN_BUILD="curl -s $COVERITY_SCAN_BUILD_URL | bash"
+    
+    
 before_script:
     - gcc -v
     - sudo add-apt-repository --yes ppa:ubuntu-toolchain-r/test
@@ -17,4 +44,4 @@ compiler:
     - clang
 
 script:
-    - make all -B && mkdir build && cd build && cmake -DWITH_FREETYPE=YES -DWITH_LIBSSH2=NO -DWITH_SMBCLIENT=NO .. && make # tests both cmake and custom builds
+    - eval "$COVERITY_SCAN_BUILD"
