@@ -12,7 +12,7 @@ struct SearchItemNode
 	bool m_Added;
 	int dirId;
 	charset_struct* cs;
-	clPtr<FSNode> fsNode; //если пусто, то это просто директорий в котором лежат файлы следующие в списке за ним
+	clPtr<FSNode> fsNode; //РµСЃР»Рё РїСѓСЃС‚Рѕ, С‚Рѕ СЌС‚Рѕ РїСЂРѕСЃС‚Рѕ РґРёСЂРµРєС‚РѕСЂРёР№ РІ РєРѕС‚РѕСЂРѕРј Р»РµР¶Р°С‚ С„Р°Р№Р»С‹ СЃР»РµРґСѓСЋС‰РёРµ РІ СЃРїРёСЃРєРµ Р·Р° РЅРёРј
 	SearchItemNode( )
 	: m_Added(false), dirId( -1 ), cs( 0 )
 	{}
@@ -30,10 +30,10 @@ struct SearchDirNode: public iIntrusiveCounter
 };
 
 
-/* такими блоками передается информация о найденом из потока поиска
-   id каталого задается потоком поиска и уникальна для директория в одном процессе поиска
+/* С‚Р°РєРёРјРё Р±Р»РѕРєР°РјРё РїРµСЂРµРґР°РµС‚СЃСЏ РёРЅС„РѕСЂРјР°С†РёСЏ Рѕ РЅР°Р№РґРµРЅРѕРј РёР· РїРѕС‚РѕРєР° РїРѕРёСЃРєР°
+   id РєР°С‚Р°Р»РѕРіРѕ Р·Р°РґР°РµС‚СЃСЏ РїРѕС‚РѕРєРѕРј РїРѕРёСЃРєР° Рё СѓРЅРёРєР°Р»СЊРЅР° РґР»СЏ РґРёСЂРµРєС‚РѕСЂРёСЏ РІ РѕРґРЅРѕРј РїСЂРѕС†РµСЃСЃРµ РїРѕРёСЃРєР°
 
-   SearchItemNode поступают в список поиска в том же порядке, добавляясь в конец
+   SearchItemNode РїРѕСЃС‚СѓРїР°СЋС‚ РІ СЃРїРёСЃРѕРє РїРѕРёСЃРєР° РІ С‚РѕРј Р¶Рµ РїРѕСЂСЏРґРєРµ, РґРѕР±Р°РІР»СЏСЏСЃСЊ РІ РєРѕРЅРµС†
 */
 struct ThreadRetStruct: public iIntrusiveCounter
 {
@@ -53,7 +53,7 @@ struct ThreadRetStruct: public iIntrusiveCounter
 class OperSearchData: public OperData
 {
 public:
-	//после создания эти параметры может трогать толькл поток поиска
+	//РїРѕСЃР»Рµ СЃРѕР·РґР°РЅРёСЏ СЌС‚Рё РїР°СЂР°РјРµС‚СЂС‹ РјРѕР¶РµС‚ С‚СЂРѕРіР°С‚СЊ С‚РѕР»СЊРєР» РїРѕС‚РѕРє РїРѕРёСЃРєР°
 	SearchAndReplaceParams searchParams;
 	clPtr<FS> searchFs;
 	FSPath searchPath;
@@ -67,7 +67,7 @@ public:
 	FSPath currentPath;
 	// } (resMutex)
 
-	//поисковый поток может менять, основной поток может использовать только после завершения поискового потока
+	//РїРѕРёСЃРєРѕРІС‹Р№ РїРѕС‚РѕРє РјРѕР¶РµС‚ РјРµРЅСЏС‚СЊ, РѕСЃРЅРѕРІРЅРѕР№ РїРѕС‚РѕРє РјРѕР¶РµС‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ С‚РѕР»СЊРєРѕ РїРѕСЃР»Рµ Р·Р°РІРµСЂС€РµРЅРёСЏ РїРѕРёСЃРєРѕРІРѕРіРѕ РїРѕС‚РѕРєР°
 	FSString errorString;
 
 	OperSearchData( NCDialogParent* p, SearchAndReplaceParams& sParams, clPtr<FS>& fs, FSPath& path, clPtr<MegaSearcher> searcher ):
@@ -756,7 +756,7 @@ void SearchFileThreadFunc( OperThreadNode* node )
 		{
 			lock.Lock(); //!!!
 
-			if ( !node->NBStopped() ) //обязательно надо проверить, иначе 'data' может быть неактуальной
+			if ( !node->NBStopped() ) //РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РЅР°РґРѕ РїСЂРѕРІРµСЂРёС‚СЊ, РёРЅР°С‡Рµ 'data' РјРѕР¶РµС‚ Р±С‹С‚СЊ РЅРµР°РєС‚СѓР°Р»СЊРЅРѕР№
 			{
 				data->errorString = ex->message();
 			}
@@ -802,7 +802,7 @@ bool SearchFile( clPtr<FS> f, FSPath p, NCDialogParent* parent, FSPath* retPath 
 
 	OperSearchData data( parent, searchParams, f, p, megaSearcher );
 	SearchFileThreadWin dlg( parent, carray_cat<char>( _LT( "Search:" ), utf8Mask.data() ).data(), &data );
-	dlg.RunNewThread( "Search file", SearchFileThreadFunc, &data ); //может быть исключение
+	dlg.RunNewThread( "Search file", SearchFileThreadFunc, &data ); //РјРѕР¶РµС‚ Р±С‹С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ
 	dlg.Enable();
 	dlg.Show();
 	int cmd = dlg.DoModal();

@@ -147,7 +147,7 @@ namespace wal
 
 		if ( WaitForSingleObject( th->handle, INFINITE ) != WAIT_OBJECT_0 )
 		{
-			return -1;   //íåÿñíî ÷òî äåëàòü ñ p
+			return -1;   //Ğ½ĞµÑÑĞ½Ğ¾ Ñ‡Ñ‚Ğ¾ Ğ´ĞµĞ»Ğ°Ñ‚ÑŒ Ñ p
 		}
 
 		if ( val ) { *val = th->ret; }

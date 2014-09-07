@@ -11,7 +11,7 @@ namespace wal
 
 	MenuData::MenuData() {}
 
-// временная штука
+// РІСЂРµРјРµРЅРЅР°СЏ С€С‚СѓРєР°
 	wal::cinthash<int, clPtr<cicon> > iconList;
 	cicon* GetCmdIcon( int cmd )
 	{

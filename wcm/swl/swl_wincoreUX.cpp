@@ -2795,7 +2795,7 @@ stopped:
 	{
 		wth_DropWindow( this );
 
-		if ( modal ) // ???? может и не надо
+		if ( modal ) // ???? РјРѕР¶РµС‚ Рё РЅРµ РЅР°РґРѕ
 		{
 			( ( ModalStruct* )modal )->EndModal( 0 );
 		}

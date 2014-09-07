@@ -53,7 +53,7 @@ struct HelpStyle
 	unsigned Bg() { return this ? bg : 0xFFFFFF; }
 };
 
-//HelpGC сделан для кэширования операций GetTextExtents а то в X11 (со стандартными X11 фонтами) это пиздец как медленно
+//HelpGC СЃРґРµР»Р°РЅ РґР»СЏ РєСЌС€РёСЂРѕРІР°РЅРёСЏ РѕРїРµСЂР°С†РёР№ GetTextExtents Р° С‚Рѕ РІ X11 (СЃРѕ СЃС‚Р°РЅРґР°СЂС‚РЅС‹РјРё X11 С„РѕРЅС‚Р°РјРё) СЌС‚Рѕ РїРёР·РґРµС† РєР°Рє РјРµРґР»РµРЅРЅРѕ
 
 class HelpGC
 {
@@ -116,17 +116,17 @@ HelpGC::~HelpGC() {};
 struct HelpNode: public iIntrusiveCounter
 {
 	HelpStyle* _style;
-	//минимальная и максимальная ширина
-	int _min; //если 0 то считается пробелом и может быть проигнорирован в начале или конце строки
+	//РјРёРЅРёРјР°Р»СЊРЅР°СЏ Рё РјР°РєСЃРёРјР°Р»СЊРЅР°СЏ С€РёСЂРёРЅР°
+	int _min; //РµСЃР»Рё 0 С‚Рѕ СЃС‡РёС‚Р°РµС‚СЃСЏ РїСЂРѕР±РµР»РѕРј Рё РјРѕР¶РµС‚ Р±С‹С‚СЊ РїСЂРѕРёРіРЅРѕСЂРёСЂРѕРІР°РЅ РІ РЅР°С‡Р°Р»Рµ РёР»Рё РєРѕРЅС†Рµ СЃС‚СЂРѕРєРё
 	int _max;
 
-	cpoint _pos; //относительно хозяина (хозяином и выставляется после prepare)
-	cpoint _size; //текущая ширина и высота
+	cpoint _pos; //РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ С…РѕР·СЏРёРЅР° (С…РѕР·СЏРёРЅРѕРј Рё РІС‹СЃС‚Р°РІР»СЏРµС‚СЃСЏ РїРѕСЃР»Рµ prepare)
+	cpoint _size; //С‚РµРєСѓС‰Р°СЏ С€РёСЂРёРЅР° Рё РІС‹СЃРѕС‚Р°
 
 	HelpNode( HelpStyle* style, int min = 0, int max = 10000 ): _style( style ), _min( min ), _max( max ), _pos( 0, 0 ), _size( 0, 0 ) {}
-	virtual void Init( HelpGC& gc ); //инициализируется по данным и определяет min и max
-	virtual void Prepare( int width ); //подготовка к размеру, выставляет _size
-	virtual void Paint( HelpGC& gc, int x, int y, bool selected, crect visibleRect ); //нарисовать в нужном месте (обязан зарисовать весь размер _size)
+	virtual void Init( HelpGC& gc ); //РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµС‚СЃСЏ РїРѕ РґР°РЅРЅС‹Рј Рё РѕРїСЂРµРґРµР»СЏРµС‚ min Рё max
+	virtual void Prepare( int width ); //РїРѕРґРіРѕС‚РѕРІРєР° Рє СЂР°Р·РјРµСЂСѓ, РІС‹СЃС‚Р°РІР»СЏРµС‚ _size
+	virtual void Paint( HelpGC& gc, int x, int y, bool selected, crect visibleRect ); //РЅР°СЂРёСЃРѕРІР°С‚СЊ РІ РЅСѓР¶РЅРѕРј РјРµСЃС‚Рµ (РѕР±СЏР·Р°РЅ Р·Р°СЂРёСЃРѕРІР°С‚СЊ РІРµСЃСЊ СЂР°Р·РјРµСЂ _size)
 	virtual ~HelpNode();
 private:
 	HelpNode() {}
@@ -164,7 +164,7 @@ struct HelpNodeV: public HelpNode
 	virtual ~HelpNodeV();
 };
 
-//текст фиксированной длины и ширины
+//С‚РµРєСЃС‚ С„РёРєСЃРёСЂРѕРІР°РЅРЅРѕР№ РґР»РёРЅС‹ Рё С€РёСЂРёРЅС‹
 struct HelpNodeWord: public HelpNode
 {
 	std::vector<unicode_t> _txt;
@@ -176,14 +176,14 @@ struct HelpNodeWord: public HelpNode
 	virtual ~HelpNodeWord();
 };
 
-//список элементов (по умолчанию расположенных вертикально)
+//СЃРїРёСЃРѕРє СЌР»РµРјРµРЅС‚РѕРІ (РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ СЂР°СЃРїРѕР»РѕР¶РµРЅРЅС‹С… РІРµСЂС‚РёРєР°Р»СЊРЅРѕ)
 struct HelpNodeList: public HelpNode
 {
 
 	struct Node
 	{
 		clPtr<HelpNode> item;
-		bool paint; //расчитывается ProbeWidth
+		bool paint; //СЂР°СЃС‡РёС‚С‹РІР°РµС‚СЃСЏ ProbeWidth
 		Node() {}
 		Node( clPtr<HelpNode> w ): item( w ) {}
 	};
@@ -200,7 +200,7 @@ struct HelpNodeList: public HelpNode
 	virtual ~HelpNodeList();
 };
 
-//абзац из элементов, элементы могут занать несколько строк
+//Р°Р±Р·Р°С† РёР· СЌР»РµРјРµРЅС‚РѕРІ, СЌР»РµРјРµРЅС‚С‹ РјРѕРіСѓС‚ Р·Р°РЅР°С‚СЊ РЅРµСЃРєРѕР»СЊРєРѕ СЃС‚СЂРѕРє
 struct HelpNodeParagraph: public HelpNodeList
 {
 
@@ -229,15 +229,15 @@ struct HelpNodeTable: public HelpNode
 
 	ccollect<clPtr<ccollect<clPtr<HelpNode> > > > _tab;
 
-	int _cols; //заполняется Init
-	std::vector<Pair> _colPair; //создается Init
+	int _cols; //Р·Р°РїРѕР»РЅСЏРµС‚СЃСЏ Init
+	std::vector<Pair> _colPair; //СЃРѕР·РґР°РµС‚СЃСЏ Init
 
 	void Append( clPtr<HelpNode> item ) { _tab[_tab.count() - 1]->append( item ); }
 	void NL() { _tab.append( new ccollect< clPtr<HelpNode> > ); }
 
 	HelpNodeTable( HelpStyle* s ): HelpNode( s )
 	{
-		NL(); //добавляем первую строку
+		NL(); //РґРѕР±Р°РІР»СЏРµРј РїРµСЂРІСѓСЋ СЃС‚СЂРѕРєСѓ
 	};
 
 	virtual void Init( HelpGC& gc );
@@ -288,7 +288,7 @@ HelpNodeSpace::~HelpNodeSpace() {}
 
 
 
-//регион (прямоугольный) из которого можно удалить прямоугольники и потом заполнить (не трогая удаленную площадь)
+//СЂРµРіРёРѕРЅ (РїСЂСЏРјРѕСѓРіРѕР»СЊРЅС‹Р№) РёР· РєРѕС‚РѕСЂРѕРіРѕ РјРѕР¶РЅРѕ СѓРґР°Р»РёС‚СЊ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРё Рё РїРѕС‚РѕРј Р·Р°РїРѕР»РЅРёС‚СЊ (РЅРµ С‚СЂРѕРіР°СЏ СѓРґР°Р»РµРЅРЅСѓСЋ РїР»РѕС‰Р°РґСЊ)
 class HelpRgn
 {
 	struct Node
@@ -341,7 +341,7 @@ void HelpRgn::Minus( crect rect )
 	while ( *pp )
 	{
 		{
-			//проверяем пересечение
+			//РїСЂРѕРІРµСЂСЏРµРј РїРµСЂРµСЃРµС‡РµРЅРёРµ
 			crect& pr = pp[0]->rect;
 
 			if ( pr.top >= rect.bottom || pr.bottom <= rect.top ||
@@ -472,7 +472,7 @@ void HelpNodeTable::Prepare( int width )
 
 	for ( i = 0; i < _cols; i++ ) { cw[i] = _colPair[i].minV; }
 
-	//распределяем добавочную длину
+	//СЂР°СЃРїСЂРµРґРµР»СЏРµРј РґРѕР±Р°РІРѕС‡РЅСѓСЋ РґР»РёРЅСѓ
 	while ( w < width && n > 0 )
 	{
 		int plus = ( width - w ) / n;
@@ -651,7 +651,7 @@ void HelpNodeList::Init( HelpGC& gc )
 
 void HelpNodeList::Prepare( int width )
 {
-	//вертикальный расчет
+	//РІРµСЂС‚РёРєР°Р»СЊРЅС‹Р№ СЂР°СЃС‡РµС‚
 	int count = _list.count();
 
 	int w = 0;
@@ -746,13 +746,13 @@ void HelpNodeParagraph::Prepare( int width )
 
 	for ( i = 0; i < _list.count(); i++ )
 	{
-		_list[i].item->Prepare( ( i == _list.count() - 1 ) ? width : 0 ); //для непоследних элементовпо минимальному размеру
+		_list[i].item->Prepare( ( i == _list.count() - 1 ) ? width : 0 ); //РґР»СЏ РЅРµРїРѕСЃР»РµРґРЅРёС… СЌР»РµРјРµРЅС‚РѕРІРїРѕ РјРёРЅРёРјР°Р»СЊРЅРѕРјСѓ СЂР°Р·РјРµСЂСѓ
 		int n = _list[i].item->_size.x;
 
 		if ( pos > 0 && pos + n > w )
 		{
 			{
-				//выравниваем
+				//РІС‹СЂР°РІРЅРёРІР°РµРј
 				if ( _align == ALIGN_RIGHT )
 				{
 					for ( int t = 0; t < curLine.count(); t++ ) { curLine[t]->item->_pos.x += w - pos; }
@@ -782,7 +782,7 @@ void HelpNodeParagraph::Prepare( int width )
 		_list[i].item->_pos.x = pos;
 		_list[i].item->_pos.y = h;
 
-		_list[i].paint = pos > 0 || _list[i].item->_min != 0; //игнорируем пробелы в начале строки
+		_list[i].paint = pos > 0 || _list[i].item->_min != 0; //РёРіРЅРѕСЂРёСЂСѓРµРј РїСЂРѕР±РµР»С‹ РІ РЅР°С‡Р°Р»Рµ СЃС‚СЂРѕРєРё
 
 		if ( _list[i].paint )
 		{
@@ -797,7 +797,7 @@ void HelpNodeParagraph::Prepare( int width )
 		}
 	}
 
-	if ( curLine.count() > 0 ) //выравниваем
+	if ( curLine.count() > 0 ) //РІС‹СЂР°РІРЅРёРІР°РµРј
 	{
 		if ( _align == ALIGN_RIGHT )
 			for ( int t = 0; t < curLine.count(); t++ ) { curLine[t]->item->_pos.x += w - pos; }
@@ -844,23 +844,23 @@ HelpParzerMem::~HelpParzerMem() {}
 
 /*
 
-   / - экранирующий символ, т.е. // - /
+   / - СЌРєСЂР°РЅРёСЂСѓСЋС‰РёР№ СЃРёРјРІРѕР», С‚.Рµ. // - /
 
-   /l /r /c /w -выравнивание абзаца (побеждает последний в абзаце) по умолчанию /l
+   /l /r /c /w -РІС‹СЂР°РІРЅРёРІР°РЅРёРµ Р°Р±Р·Р°С†Р° (РїРѕР±РµР¶РґР°РµС‚ РїРѕСЃР»РµРґРЅРёР№ РІ Р°Р±Р·Р°С†Рµ) РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ /l
 
-   // %+ %- включить, выключить автоперенос (в пределах блока) по умолчанию включен
+   // %+ %- РІРєР»СЋС‡РёС‚СЊ, РІС‹РєР»СЋС‡РёС‚СЊ Р°РІС‚РѕРїРµСЂРµРЅРѕСЃ (РІ РїСЂРµРґРµР»Р°С… Р±Р»РѕРєР°) РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ РІРєР»СЋС‡РµРЅ
 
-   <s [id]> смена текущего стиля (в пределах блока)
-   /n переход на новый абзац
-   <v [N]> -вертикальная вставка
-   <h [N]> -горизонтальная вставка (размар 1/10 от ширины символа текущего фонта (средней ширины A B и С))
+   <s [id]> СЃРјРµРЅР° С‚РµРєСѓС‰РµРіРѕ СЃС‚РёР»СЏ (РІ РїСЂРµРґРµР»Р°С… Р±Р»РѕРєР°)
+   /n РїРµСЂРµС…РѕРґ РЅР° РЅРѕРІС‹Р№ Р°Р±Р·Р°С†
+   <v [N]> -РІРµСЂС‚РёРєР°Р»СЊРЅР°СЏ РІСЃС‚Р°РІРєР°
+   <h [N]> -РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅР°СЏ РІСЃС‚Р°РІРєР° (СЂР°Р·РјР°СЂ 1/10 РѕС‚ С€РёСЂРёРЅС‹ СЃРёРјРІРѕР»Р° С‚РµРєСѓС‰РµРіРѕ С„РѕРЅС‚Р° (СЃСЂРµРґРЅРµР№ С€РёСЂРёРЅС‹ A B Рё РЎ))
 
-   @t - таблица
-   @n - конец строки таблицы
-   @c - конец колонки в строке таблицы
-   @e - конец таблицы
+   @t - С‚Р°Р±Р»РёС†Р°
+   @n - РєРѕРЅРµС† СЃС‚СЂРѕРєРё С‚Р°Р±Р»РёС†С‹
+   @c - РєРѕРЅРµС† РєРѕР»РѕРЅРєРё РІ СЃС‚СЂРѕРєРµ С‚Р°Р±Р»РёС†С‹
+   @e - РєРѕРЅРµС† С‚Р°Р±Р»РёС†С‹
 
-   блок ограничивается символами { и }
+   Р±Р»РѕРє РѕРіСЂР°РЅРёС‡РёРІР°РµС‚СЃСЏ СЃРёРјРІРѕР»Р°РјРё { Рё }
 
 */
 
@@ -1258,7 +1258,7 @@ clPtr<HelpNode> HelpParzer::Parze()
 			case TOK_TAB:
 				NextToken();
 				pPar->Append( ParzeTable() );
-				//ParzeTable забирает токен окончания таблицы
+				//ParzeTable Р·Р°Р±РёСЂР°РµС‚ С‚РѕРєРµРЅ РѕРєРѕРЅС‡Р°РЅРёСЏ С‚Р°Р±Р»РёС†С‹
 				continue;
 
 			default:
@@ -1901,7 +1901,7 @@ void Help( NCDialogParent* parent, const char* theme )
 {
 	HelpDlg dlg( parent, _LT( "Help" ), theme );
 
-	if ( !dlg.Ok() ) { return; } //не нашел тему
+	if ( !dlg.Ok() ) { return; } //РЅРµ РЅР°С€РµР» С‚РµРјСѓ
 
 	dlg.DoModal();
 }

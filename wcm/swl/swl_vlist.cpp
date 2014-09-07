@@ -30,7 +30,7 @@ namespace wal
 		  layout( 4, 4 )
 
 	{
-		vScroll.Show();   //!!! неясности с порядком ???
+		vScroll.Show();   //!!! РЅРµСЏСЃРЅРѕСЃС‚Рё СЃ РїРѕСЂСЏРґРєРѕРј ???
 		vScroll.Enable();
 		hScroll.Show();
 		hScroll.Enable();
@@ -210,7 +210,7 @@ namespace wal
 		}
 		else
 		{
-			//на всякий случай
+			//РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№
 			rect.Dec();
 			gc.SetFillColor( bgColor );
 			gc.FillRect( rect );

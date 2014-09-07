@@ -8,7 +8,7 @@
 class OperDirCalcData: public OperData
 {
 public:
-	//после создания эти параметры может трогать толькл поток поиска
+	//РїРѕСЃР»Рµ СЃРѕР·РґР°РЅРёСЏ СЌС‚Рё РїР°СЂР°РјРµС‚СЂС‹ РјРѕР¶РµС‚ С‚СЂРѕРіР°С‚СЊ С‚РѕР»СЊРєР» РїРѕС‚РѕРє РїРѕРёСЃРєР°
 	clPtr<FS> dirFs;
 	FSPath _path;
 	clPtr<FSList> dirList;
@@ -22,7 +22,7 @@ public:
 	FSPath currentPath;
 	// } (resMutex)
 
-	//поисковый поток может менять, основной поток может использовать только после завершения поискового потока
+	//РїРѕРёСЃРєРѕРІС‹Р№ РїРѕС‚РѕРє РјРѕР¶РµС‚ РјРµРЅСЏС‚СЊ, РѕСЃРЅРѕРІРЅРѕР№ РїРѕС‚РѕРє РјРѕР¶РµС‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ С‚РѕР»СЊРєРѕ РїРѕСЃР»Рµ Р·Р°РІРµСЂС€РµРЅРёСЏ РїРѕРёСЃРєРѕРІРѕРіРѕ РїРѕС‚РѕРєР°
 	FSString errorString;
 
 	OperDirCalcData( NCDialogParent* p, clPtr<FS>& fs, FSPath& path, clPtr<FSList> list ):
@@ -508,7 +508,7 @@ void DirCalcThreadFunc( OperThreadNode* node )
 		{
 			lock.Lock(); //!!!
 
-			if ( !node->NBStopped() ) //обязательно надо проверить, иначе 'data' может быть неактуальной
+			if ( !node->NBStopped() ) //РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РЅР°РґРѕ РїСЂРѕРІРµСЂРёС‚СЊ, РёРЅР°С‡Рµ 'data' РјРѕР¶РµС‚ Р±С‹С‚СЊ РЅРµР°РєС‚СѓР°Р»СЊРЅРѕР№
 			{
 				data->errorString = ex->message();
 			}
@@ -532,7 +532,7 @@ bool DirCalc( clPtr<FS> f, FSPath& path, clPtr<FSList> list, NCDialogParent* par
 	OperDirCalcData data( parent, f, path, list );
 	DirCalcThreadWin dlg( parent,  _LT( "Selected folders size" ) , &data, f->Uri( path ).GetUnicode() );
 
-	dlg.RunNewThread( "Folder calc", DirCalcThreadFunc, &data ); //может быть исключение
+	dlg.RunNewThread( "Folder calc", DirCalcThreadFunc, &data ); //РјРѕР¶РµС‚ Р±С‹С‚СЊ РёСЃРєР»СЋС‡РµРЅРёРµ
 
 	dlg.Enable();
 	dlg.Show();

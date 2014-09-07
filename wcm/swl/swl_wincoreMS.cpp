@@ -85,7 +85,7 @@ namespace wal
 		return w->Event( &ev );
 	}
 
-	void CheckMousePosition()  //надо запускать периодически (2 раза в секунду)
+	void CheckMousePosition()  //РЅР°РґРѕ Р·Р°РїСѓСЃРєР°С‚СЊ РїРµСЂРёРѕРґРёС‡РµСЃРєРё (2 СЂР°Р·Р° РІ СЃРµРєСѓРЅРґСѓ)
 	{
 		if ( mouseWindow )
 		{
@@ -150,7 +150,7 @@ namespace wal
 	}
 
 
-// надо с исключениями порешать
+// РЅР°РґРѕ СЃ РёСЃРєР»СЋС‡РµРЅРёСЏРјРё РїРѕСЂРµС€Р°С‚СЊ
 	static LRESULT CALLBACK WProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 	{
 		try
@@ -171,8 +171,8 @@ namespace wal
 				case WM_NCACTIVATE:
 //	break;
 				{
-					// Все для того, чтоб при активации и деактивации дерева попапов
-					// рамки всего дерева были либо активными либо нет одновременно
+					// Р’СЃРµ РґР»СЏ С‚РѕРіРѕ, С‡С‚РѕР± РїСЂРё Р°РєС‚РёРІР°С†РёРё Рё РґРµР°РєС‚РёРІР°С†РёРё РґРµСЂРµРІР° РїРѕРїР°РїРѕРІ
+					// СЂР°РјРєРё РІСЃРµРіРѕ РґРµСЂРµРІР° Р±С‹Р»Рё Р»РёР±Рѕ Р°РєС‚РёРІРЅС‹РјРё Р»РёР±Рѕ РЅРµС‚ РѕРґРЅРѕРІСЂРµРјРµРЅРЅРѕ
 					if ( !win ) { break; }
 
 					if ( win->IsOneParentWith( ( HWND )lParam ) ) { return TRUE; }
@@ -831,7 +831,7 @@ namespace wal
 	{
 		wth_DropWindow( this );
 
-		if ( modal ) // ???? может и не надо
+		if ( modal ) // ???? РјРѕР¶РµС‚ Рё РЅРµ РЅР°РґРѕ
 		{
 			( ( ModalStruct* )modal )->EndModal( 0 );
 		}
@@ -1469,7 +1469,7 @@ namespace wal
 
 	void Win32CompatibleBitmap::Set( Image32& image )
 	{
-///!!! надо сделать по нормальному, а не через SetPixel !!!
+///!!! РЅР°РґРѕ СЃРґРµР»Р°С‚СЊ РїРѕ РЅРѕСЂРјР°Р»СЊРЅРѕРјСѓ, Р° РЅРµ С‡РµСЂРµР· SetPixel !!!
 		clear();
 		int w = image.width();
 		int h = image.height();

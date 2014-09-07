@@ -23,7 +23,7 @@ namespace wal
 	enum BASE_COMMANDS
 	{
 	   _CMD_BASE_BEGIN_POINT_ = -99,
-	   CMD_ITEM_CLICK,      //может случаться в объектах с подэлементами при нажатии enter или doubleclick (например VList)
+	   CMD_ITEM_CLICK,      //РјРѕР¶РµС‚ СЃР»СѓС‡Р°С‚СЊСЃСЏ РІ РѕР±СЉРµРєС‚Р°С… СЃ РїРѕРґСЌР»РµРјРµРЅС‚Р°РјРё РїСЂРё РЅР°Р¶Р°С‚РёРё enter РёР»Рё doubleclick (РЅР°РїСЂРёРјРµСЂ VList)
 	   CMD_ITEM_CHANGED,
 	   CMD_SBUTTON_INFO, //with subcommands
 	   CMD_SCROLL_INFO,     //with subcommands
@@ -159,7 +159,7 @@ namespace wal
 		bool frame3d;
 		int charH, charW;
 		void DrawCursor( GC& gc );
-		bool CheckCursorPos(); //true - РµСЃР»Рё РЅСѓР¶РЅР° РїРµСЂРµСЂРёСЃРѕРІРєР°
+		bool CheckCursorPos(); //true -РµСЃР»Рё РЅСѓР¶РЅР° РїРµСЂРµСЂРёСЃРѕРІРєР°
 		void ClipboardCopy();
 		void ClipboardPaste();
 		void ClipboardCut();
@@ -230,14 +230,14 @@ namespace wal
 		bool vertical;
 		ScrollInfo si;
 
-		int len; //расстояние между крайними кнопками
-		int bsize; // размер средней кнопки
-		int bpos; // расстояние от средней кнопки до первой
+		int len; //СЂР°СЃСЃС‚РѕСЏРЅРёРµ РјРµР¶РґСѓ РєСЂР°Р№РЅРёРјРё РєРЅРѕРїРєР°РјРё
+		int bsize; // СЂР°Р·РјРµСЂ СЃСЂРµРґРЅРµР№ РєРЅРѕРїРєРё
+		int bpos; // СЂР°СЃСЃС‚РѕСЏРЅРёРµ РѕС‚ СЃСЂРµРґРЅРµР№ РєРЅРѕРїРєРё РґРѕ РїРµСЂРІРѕР№
 
 		crect b1Rect, b2Rect, b3Rect;
 
-		bool trace; // состояние трассировки
-		int traceBPoint; // точка нажатия мыши от начала средней кнопки (испю при трассировке)
+		bool trace; // СЃРѕСЃС‚РѕСЏРЅРёРµ С‚СЂР°СЃСЃРёСЂРѕРІРєРё
+		int traceBPoint; // С‚РѕС‡РєР° РЅР°Р¶Р°С‚РёСЏ РјС‹С€Рё РѕС‚ РЅР°С‡Р°Р»Р° СЃСЂРµРґРЅРµР№ РєРЅРѕРїРєРё (РёСЃРїСЋ РїСЂРё С‚СЂР°СЃСЃРёСЂРѕРІРєРµ)
 
 		bool autoHide;
 
@@ -289,7 +289,7 @@ namespace wal
 
 		Layout layout;
 
-		crect listRect; //rect в котором надо рисовать список
+		crect listRect; //rect РІ РєРѕС‚РѕСЂРѕРј РЅР°РґРѕ СЂРёСЃРѕРІР°С‚СЊ СЃРїРёСЃРѕРє
 		crect scrollRect;
 
 		IntList selectList;

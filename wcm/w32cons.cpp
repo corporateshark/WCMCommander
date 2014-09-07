@@ -2,14 +2,14 @@
 #include "string-util.h"
 
 /*
-   надо сделать, чтоб можно было выяснить запущен процесс или нет
+   РЅР°РґРѕ СЃРґРµР»Р°С‚СЊ, С‡С‚РѕР± РјРѕР¶РЅРѕ Р±С‹Р»Рѕ РІС‹СЏСЃРЅРёС‚СЊ Р·Р°РїСѓС‰РµРЅ РїСЂРѕС†РµСЃСЃ РёР»Рё РЅРµС‚
    !!!
    !!!
 
-   курсор глючит
-   программы надо сначала так поискать, а потом отдавать cmd если не нашлись
+   РєСѓСЂСЃРѕСЂ РіР»СЋС‡РёС‚
+   РїСЂРѕРіСЂР°РјРјС‹ РЅР°РґРѕ СЃРЅР°С‡Р°Р»Р° С‚Р°Рє РїРѕРёСЃРєР°С‚СЊ, Р° РїРѕС‚РѕРј РѕС‚РґР°РІР°С‚СЊ cmd РµСЃР»Рё РЅРµ РЅР°С€Р»РёСЃСЊ
 
-   надо наладить чтение блоков>64k в клипбоард (ReadConsoleOutputW большие блоки нечитает)
+   РЅР°РґРѕ РЅР°Р»Р°РґРёС‚СЊ С‡С‚РµРЅРёРµ Р±Р»РѕРєРѕРІ>64k РІ РєР»РёРїР±РѕР°СЂРґ (ReadConsoleOutputW Р±РѕР»СЊС€РёРµ Р±Р»РѕРєРё РЅРµС‡РёС‚Р°РµС‚)
 */
 
 int uiClassTerminal = GetUiID( "Terminal" );
@@ -471,7 +471,7 @@ void W32Cons::Key( cevent_key* pEvent )
 	rec.EventType = KEY_EVENT;
 	rec.Event.KeyEvent.bKeyDown = pEvent->Type() == EV_KEYDOWN ? TRUE : FALSE;
 	rec.Event.KeyEvent.uChar.UnicodeChar = pEvent->Char();
-	rec.Event.KeyEvent.dwControlKeyState = 0; //!!! переделать
+	rec.Event.KeyEvent.dwControlKeyState = 0; //!!! РїРµСЂРµРґРµР»Р°С‚СЊ
 
 	BYTE keyState[0x100];
 	::GetKeyboardState( keyState );
@@ -772,7 +772,7 @@ bool W32Cons::DrawChanges()
 
 	if ( R > 0 && C > 0 )
 	{
-//см Paint
+//СЃРј Paint
 		const int MAX_BLOCK = 1024;
 
 		int step = MAX_BLOCK / C;
@@ -807,7 +807,7 @@ bool W32Cons::DrawChanges()
 			srect.Right = C - 1;
 			srect.Bottom = _firstRow + row + n - 1;
 
-			//!непонятки (если этого не поставить, то ReadConsoleOutputW портит память, хотя должна отработать выход за пределы
+			//!РЅРµРїРѕРЅСЏС‚РєРё (РµСЃР»Рё СЌС‚РѕРіРѕ РЅРµ РїРѕСЃС‚Р°РІРёС‚СЊ, С‚Рѕ ReadConsoleOutputW РїРѕСЂС‚РёС‚ РїР°РјСЏС‚СЊ, С…РѕС‚СЏ РґРѕР»Р¶РЅР° РѕС‚СЂР°Р±РѕС‚Р°С‚СЊ РІС‹С…РѕРґ Р·Р° РїСЂРµРґРµР»С‹
 			if ( srect.Bottom >= consLastInfo.dwSize.Y )
 			{
 				srect.Bottom = consLastInfo.dwSize.Y - 1;
@@ -899,7 +899,7 @@ void W32Cons::EventTimer( int tid )
 	}
 }
 
-static int FindLastNoSpace( CHAR_INFO* s, int count ) //возвращает номер пробела, стоящего за последним непробелом или count
+static int FindLastNoSpace( CHAR_INFO* s, int count ) //РІРѕР·РІСЂР°С‰Р°РµС‚ РЅРѕРјРµСЂ РїСЂРѕР±РµР»Р°, СЃС‚РѕСЏС‰РµРіРѕ Р·Р° РїРѕСЃР»РµРґРЅРёРј РЅРµРїСЂРѕР±РµР»РѕРј РёР»Рё count
 {
 	int n = -1;
 
@@ -909,7 +909,7 @@ static int FindLastNoSpace( CHAR_INFO* s, int count ) //возвращает номер пробела
 	return n + 1;
 }
 
-//!(Доработать) Надо сделать поблочное чтение ReadConsoleOutputW (блоки<64k) иначе большие блоки не читаются
+//!(Р”РѕСЂР°Р±РѕС‚Р°С‚СЊ) РќР°РґРѕ СЃРґРµР»Р°С‚СЊ РїРѕР±Р»РѕС‡РЅРѕРµ С‡С‚РµРЅРёРµ ReadConsoleOutputW (Р±Р»РѕРєРё<64k) РёРЅР°С‡Рµ Р±РѕР»СЊС€РёРµ Р±Р»РѕРєРё РЅРµ С‡РёС‚Р°СЋС‚СЃСЏ
 
 bool W32Cons::GetMarked( ClipboardText& ct )
 {
@@ -1238,8 +1238,8 @@ void W32Cons::Paint( wal::GC& gc, const crect& paintRect )
 	int R = screen.Rows();
 	int C = screen.Cols();
 
-//почему то при больших объемах ReadConsoleOutputW возвращает ERROR_NOT_ENOUGH_MEMORY
-//приходится читать блоками
+//РїРѕС‡РµРјСѓ С‚Рѕ РїСЂРё Р±РѕР»СЊС€РёС… РѕР±СЉРµРјР°С… ReadConsoleOutputW РІРѕР·РІСЂР°С‰Р°РµС‚ ERROR_NOT_ENOUGH_MEMORY
+//РїСЂРёС…РѕРґРёС‚СЃСЏ С‡РёС‚Р°С‚СЊ Р±Р»РѕРєР°РјРё
 
 	if ( R > 0 && C > 0 )
 	{
@@ -1275,7 +1275,7 @@ void W32Cons::Paint( wal::GC& gc, const crect& paintRect )
 			srect.Right = C - 1;
 			srect.Bottom = _firstRow + row + n - 1;
 
-			//!непонятки (если этого не поставить, то ReadConsoleOutputW портит память, хотя должна отработать выход за пределы
+			//!РЅРµРїРѕРЅСЏС‚РєРё (РµСЃР»Рё СЌС‚РѕРіРѕ РЅРµ РїРѕСЃС‚Р°РІРёС‚СЊ, С‚Рѕ ReadConsoleOutputW РїРѕСЂС‚РёС‚ РїР°РјСЏС‚СЊ, С…РѕС‚СЏ РґРѕР»Р¶РЅР° РѕС‚СЂР°Р±РѕС‚Р°С‚СЊ РІС‹С…РѕРґ Р·Р° РїСЂРµРґРµР»С‹
 			if ( srect.Bottom >= consLastInfo.dwSize.Y )
 			{
 				srect.Bottom = consLastInfo.dwSize.Y - 1;
@@ -1318,7 +1318,7 @@ void W32Cons::Paint( wal::GC& gc, const crect& paintRect )
 W32Cons::~W32Cons()
 {
 	SetConsoleCtrlHandler( ConsoleHandlerRoutine, FALSE );
-	//пытаемся закрыть консоль и если не получается, то хоть показать ее тогда
+	//РїС‹С‚Р°РµРјСЃСЏ Р·Р°РєСЂС‹С‚СЊ РєРѕРЅСЃРѕР»СЊ Рё РµСЃР»Рё РЅРµ РїРѕР»СѓС‡Р°РµС‚СЃСЏ, С‚Рѕ С…РѕС‚СЊ РїРѕРєР°Р·Р°С‚СЊ РµРµ С‚РѕРіРґР°
 	HWND h = ::GetConsoleWindow();
 
 	if ( h )

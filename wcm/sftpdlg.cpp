@@ -228,7 +228,7 @@ FSPromptDialog::FSPromptDialog( PromptCBData* data )
 
 		if ( i == 0 ) { node.ansver->SetFocus(); }
 
-		order.append( node.ansver.ptr() ); //порядок с list.append - важен
+		order.append( node.ansver.ptr() ); //РїРѕСЂСЏРґРѕРє СЃ list.append - РІР°Р¶РµРЅ
 
 		list.append( node );
 

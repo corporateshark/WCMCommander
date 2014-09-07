@@ -26,7 +26,7 @@ namespace wal
 
 	enum CoreCommands
 	{
-	   CMD_CHECK = 0, //команда проверки (поддерживается команда или нет) номер команды в этом случае передается в подкоманде
+	   CMD_CHECK = 0, //РєРѕРјР°РЅРґР° РїСЂРѕРІРµСЂРєРё (РїРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ РєРѕРјР°РЅРґР° РёР»Рё РЅРµС‚) РЅРѕРјРµСЂ РєРѕРјР°РЅРґС‹ РІ СЌС‚РѕРј СЃР»СѓС‡Р°Рµ РїРµСЂРµРґР°РµС‚СЃСЏ РІ РїРѕРґРєРѕРјР°РЅРґРµ
 	   CMD_OK = 1,
 	   CMD_CANCEL = 2,
 	   CMD_YES = 3,
@@ -370,7 +370,7 @@ namespace wal
 	};
 
 
-// применяются виндовозные Virtual keys
+// РїСЂРёРјРµРЅСЏСЋС‚СЃСЏ РІРёРЅРґРѕРІРѕР·РЅС‹Рµ Virtual keys
 	class cevent_key: public cevent_input
 	{
 		int key; //virtual key
@@ -422,7 +422,7 @@ namespace wal
 
 #ifdef _WIN32
 		HFONT handle;
-		bool external; //true если внешний хэндл (чтоб не удалять в деструкторе)
+		bool external; //true РµСЃР»Рё РІРЅРµС€РЅРёР№ С…СЌРЅРґР» (С‡С‚РѕР± РЅРµ СѓРґР°Р»СЏС‚СЊ РІ РґРµСЃС‚СЂСѓРєС‚РѕСЂРµ)
 		void drop() { if ( handle && !external ) { ::DeleteObject( handle ); } handle = 0;  }
 #else
 		enum { TYPE_X11 = 0, TYPE_FT = 1 };
@@ -740,7 +740,7 @@ namespace wal
 		bool textColorSet;
 		bool bkColorSet;
 
-		int bkMode; // -1 - неизвестно 0 - transparent 1 - OPAQUE
+		int bkMode; // -1 - РЅРµРёР·РІРµСЃС‚РЅРѕ 0 - transparent 1 - OPAQUE
 		GC( HDC h, bool needDel );
 		void Restore();
 
@@ -967,8 +967,8 @@ namespace wal
 		wal::ccollect<Win*> childList;
 		WTYPE type;
 
-		WinID blockedBy; //Каким модальным окном заблокировано
-		void* modal; //если не 0 то окно в модальном состоянии
+		WinID blockedBy; //РљР°РєРёРј РјРѕРґР°Р»СЊРЅС‹Рј РѕРєРЅРѕРј Р·Р°Р±Р»РѕРєРёСЂРѕРІР°РЅРѕ
+		void* modal; //РµСЃР»Рё РЅРµ 0 С‚Рѕ РѕРєРЅРѕ РІ РјРѕРґР°Р»СЊРЅРѕРј СЃРѕСЃС‚РѕСЏРЅРёРё
 
 		unsigned whint;
 		unsigned state;
@@ -984,7 +984,7 @@ namespace wal
 		void ClearState( unsigned s ) { state &= ~s; }
 
 		bool IsOneParentWith( WinID h );
-		void PopupTreeList( ccollect<WinID>& list ); //добавляет в список текущее окно и его попапы
+		void PopupTreeList( ccollect<WinID>& list ); //РґРѕР±Р°РІР»СЏРµС‚ РІ СЃРїРёСЃРѕРє С‚РµРєСѓС‰РµРµ РѕРєРЅРѕ Рё РµРіРѕ РїРѕРїР°РїС‹
 
 		Win* FocusNPChild( bool next );
 
