@@ -54,7 +54,12 @@ bool NCDialog::Command( int id, int subId, Win* win, void* data )
 }
 
 int uiClassNCDialog = GetUiID( "NCDialog" );
-int NCDialog::UiGetClassId() { return uiClassNCDialog; }
+
+int NCDialog::UiGetClassId()
+{
+	return m_nId;
+//	return uiClassNCDialog;
+}
 
 NCDialog::NCDialog( bool asChild, int nId, NCDialogParent* parent, const unicode_t* headerText, ButtonDataNode* blist ) //, unsigned bcolor, unsigned fcolor)
 	: OperThreadWin( asChild ? Win::WT_CHILD : WT_MAIN /*WT_POPUP*/, 0, nId, parent ), //, &crect(0,0,300,100)),
@@ -66,7 +71,8 @@ NCDialog::NCDialog( bool asChild, int nId, NCDialogParent* parent, const unicode
 	  _buttonLo( 3, 16 ),
 	  _headerLo( 3, 3 ),
 	  _parentLo( 3, 3 ),
-	  enterCmd( 0 )
+	  enterCmd( 0 ),
+	  m_nId( nId )
 {
 	Enable();
 

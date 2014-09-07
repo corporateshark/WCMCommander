@@ -657,7 +657,9 @@ WcmConfig::WcmConfig()
 
 	   terminalBackspaceKey( 0 ),
 
-	   viewColorMode( 0 )
+	   viewColorMode( 0 ),
+	   
+	   windowX(0), windowY(0), windowWidth(0), windowHeight(0)
 {
 	leftPanelPath = new_char_str( "" );
 	rightPanelPath = new_char_str( "" );

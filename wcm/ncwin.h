@@ -187,6 +187,7 @@ class NCAutocompleteList: public TextList
 {
 public:
 	NCAutocompleteList( WTYPE t, unsigned hints, int nId, Win* _parent, SelectType st, BorderType bt, crect* rect );
+	int UiGetClassId() override;
 	virtual bool EventKey( cevent_key* pEvent ) override;
 	virtual bool EventMouse( cevent_mouse* pEvent ) override;
 };
@@ -316,6 +317,7 @@ private:
 	void SetToolbarView();
 
 	void PastePanelPath( PanelWin* p );
+	void PastePanelCurrentFileURI( PanelWin* p );
 
 	/// paste file or folder name to the command line, add quotes if the name contains spaces
 	void PasteFileNameToCommandLine( const unicode_t* path );

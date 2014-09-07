@@ -9,11 +9,16 @@ SearchAndReplaceParams searchParams;
 
 struct SearchItemNode
 {
+	bool m_Added;
 	int dirId;
 	charset_struct* cs;
 	clPtr<FSNode> fsNode; //если пусто, то это просто директорий в котором лежат файлы следующие в списке за ним
-	SearchItemNode(): dirId( -1 ), cs( 0 ) {}
-	SearchItemNode( int di, FSNode* pNode, charset_struct* _c ): dirId( di ), fsNode( pNode ? new FSNode( *pNode ) : ( ( FSNode* )0 ) ), cs( _c ) {}
+	SearchItemNode( )
+	: m_Added(false), dirId( -1 ), cs( 0 )
+	{}
+	SearchItemNode( int di, FSNode* pNode, charset_struct* _c )
+	: m_Added(false), dirId( di ), fsNode( pNode ? new FSNode( *pNode ) : ( ( FSNode* )0 ) ), cs( _c )
+	{}
 };
 
 struct SearchDirNode: public iIntrusiveCounter
@@ -32,10 +37,16 @@ struct SearchDirNode: public iIntrusiveCounter
 */
 struct ThreadRetStruct: public iIntrusiveCounter
 {
-	ccollect<clPtr<SearchDirNode>, 0x100> dirList;
-	ccollect<SearchItemNode, 0x100> itemList;
-	void AddDir( int id, FSPath& path ) { dirList.append( new SearchDirNode( id, path ) ); }
-	void AddItem( int dirId, FSNode* pNode, charset_struct* _c ) {  itemList.append( SearchItemNode( dirId, pNode, _c ) ); }
+	std::vector< clPtr<SearchDirNode> > m_DirList;
+	std::vector< SearchItemNode > m_ItemList;
+	void AddDir( int id, FSPath& path )
+	{
+		m_DirList.push_back( new SearchDirNode( id, path ) );
+	}
+	void AddItem( int dirId, FSNode* pNode, charset_struct* _c )
+	{
+		m_ItemList.push_back( SearchItemNode( dirId, pNode, _c ) );
+	}
 };
 
 
@@ -370,8 +381,8 @@ OperSearchThread::~OperSearchThread() {}
 
 class SearchListWin: public VListWin
 {
-	cinthash<int, clPtr<SearchDirNode> > dirHash;
-	ccollect<SearchItemNode, 1024> itemList;
+	cinthash<int, clPtr<SearchDirNode> > m_DirHash;
+	std::vector<SearchItemNode> m_ItemList;
 	int fontW;
 	int fontH;
 public:
@@ -402,19 +413,21 @@ public:
 	{
 		if ( !p.ptr() ) { return; }
 
-		int i;
-
-		for ( i = 0; i < p->dirList.count(); i++ )
+		for ( size_t i = 0; i < (int)p->m_DirList.size(); i++ )
 		{
-			dirHash[p->dirList[i]->id] = p->dirList[i];
+			m_DirHash[p->m_DirList[i]->id] = p->m_DirList[i];
 		}
 
-		for ( int i = 0; i < p->itemList.count(); i++ )
+		for ( size_t i = 0; i < p->m_ItemList.size(); i++ )
 		{
-			itemList.append( p->itemList[i] );
+			if ( !p->m_ItemList[i].m_Added )
+			{
+				m_ItemList.push_back( p->m_ItemList[i] );
+				p->m_ItemList[i].m_Added = true;
+			}
 		}
 
-		this->SetCount( itemList.count() );
+		this->SetCount( m_ItemList.size() );
 
 		if ( GetCurrent() < 0 && this->GetCount() > 0 )
 		{
@@ -423,7 +436,7 @@ public:
 
 		this->CalcScroll();
 
-		if ( this->GetPageFirstItem() + this->GetPageItemCount() + 1 < itemList.count() )
+		if ( this->GetPageFirstItem() + this->GetPageItemCount() + 1 < (int)m_ItemList.size() )
 		{
 			return;
 		}
@@ -435,9 +448,9 @@ public:
 	{
 		if ( GetCurrent() < 0 || GetCurrent() > GetCount() ) { return false; }
 
-		SearchItemNode* t = &( itemList[GetCurrent()] );
+		SearchItemNode* t = &( m_ItemList[GetCurrent()] );
 
-		clPtr<SearchDirNode>* d = dirHash.exist( t->dirId );
+		clPtr<SearchDirNode>* d = m_DirHash.exist( t->dirId );
 
 		if ( !d ) { return false; }
 
@@ -458,10 +471,16 @@ public:
 };
 
 extern cicon folderIcon;
+extern cicon folderIconHi;
+
+int CenterIconHeight( const crect& rect, int IconHeight )
+{
+	return rect.top + ( rect.Height( ) - IconHeight ) / 2;
+}
 
 void SearchListWin::DrawItem( wal::GC& gc, int n, crect rect )
 {
-	if ( n >= 0 && n < this->itemList.count() )
+	if ( n >= 0 && n < (int)this->m_ItemList.size() )
 	{
 		bool frame = false;
 		UiCondList ucl;
@@ -488,23 +507,23 @@ void SearchListWin::DrawItem( wal::GC& gc, int n, crect rect )
 		int x = 0;
 		const unicode_t* txt = 0;
 
-		if ( itemList[n].fsNode.ptr() )
+		if ( m_ItemList[n].fsNode )
 		{
-			txt = itemList[n].fsNode->GetUnicodeName();
+			txt = m_ItemList[n].fsNode->GetUnicodeName();
 			x = fontW * 10;
 
-			if ( itemList[n].fsNode->IsDir() )
+			if ( m_ItemList[n].fsNode->IsDir() )
 			{
-				gc.DrawIcon( x, rect.top + 1, &folderIcon );
+				gc.DrawIcon( x, CenterIconHeight( rect, folderIcon.Height( ) ), &folderIcon );
 			}
 			else
 			{
-				if ( itemList[n].cs )
+				if ( m_ItemList[n].cs )
 				{
 					gc.Set( GetFont() );
 					gc.SetTextColor( textColor );
-					gc.TextOutF( rect.left + 10, rect.top + 2, utf8_to_unicode( itemList[n].cs->name ).data() );
-				}
+					gc.TextOutF( rect.left + 10, rect.top + 2, utf8_to_unicode( m_ItemList[n].cs->name ).data() );
+				}				
 			}
 
 			x += 20;
@@ -515,9 +534,17 @@ void SearchListWin::DrawItem( wal::GC& gc, int n, crect rect )
 			crect r( rect );
 			r.bottom = r.top + 1;
 			gc.FillRect( r );
-			clPtr<SearchDirNode>* d = dirHash.exist( itemList[n].dirId );
+			clPtr<SearchDirNode>* d = m_DirHash.exist( m_ItemList[n].dirId );
 
 			if ( d ) { txt = d[0]->path.GetUnicode(); }
+
+			const int FolderIconMargin = 10;
+
+			gc.DrawIcon( x + FolderIconMargin, CenterIconHeight( rect, folderIcon.Height( ) ), &folderIcon );
+			gc.SetLine( textColor );
+			gc.MoveTo( 0, rect.top + 1 );
+			gc.LineTo( rect.right, rect.top + 1 );
+			x += folderIcon.Width( ) + FolderIconMargin;
 		}
 
 		int textWidth = x;

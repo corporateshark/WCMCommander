@@ -107,6 +107,9 @@ namespace wal
 	   VK_NUMPAD_CENTER = 0x0C,
 	   VK_NUMPAD_RETURN = 0xFFFF,
 
+		VK_LMETA      = VK_LWIN,
+		VK_RMETA      = VK_RWIN,
+
 #ifndef VK_SLASH
 	   VK_SLASH      =   0xBF,
 #endif
@@ -197,6 +200,9 @@ namespace wal
 	   VK_GRAVE = XK_grave,
 
 	   VK_INSERT = XK_Insert,
+
+		VK_LMETA = XK_Meta_L,
+		VK_RMETA = XK_Meta_R,
 
 	   VK_LCONTROL = XK_Control_L,
 	   VK_RCONTROL = XK_Control_R,

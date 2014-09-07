@@ -4,6 +4,7 @@ echo "" >../makelib.mk
 
 #smb
 if cc -I /usr/local/include -L /usr/local/lib libsmb_test.cpp -lstdc++ -lsmbclient -o libsmbtest >/dev/null 2>/dev/null && ./libsmbtest >/dev/null 2>/dev/null
+#if cc -I /usr/local/include -I /usr/include/samba-4.0 -L /usr/local/lib libsmb_test.cpp -lstdc++ -lsmbclient -o libsmbtest >/dev/null 2>/dev/null && ./libsmbtest >/dev/null 2>/dev/null
 then
 	echo "#if !defined( LIBSMBCLIENT_EXIST )" >>../libconf_ux.h
 	echo "#	define LIBSMBCLIENT_EXIST" >>../libconf_ux.h

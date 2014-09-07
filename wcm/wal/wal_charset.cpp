@@ -14,6 +14,8 @@ namespace wal
 		unsigned char** _fromUnicode;
 	public:
 		CP8( unsigned short* p );
+		~CP8();
+		
 		unsigned ToUnicode( char c ) { return _toUnicode[( ( unsigned char )c )]; }
 
 		void AddCh( char c, unsigned n );
@@ -26,8 +28,6 @@ namespace wal
 
 			return p[n & 0xFF];
 		}
-
-		~CP8() {}
 	};
 
 	void CP8::AddCh( char c, unsigned n )
@@ -51,8 +51,8 @@ namespace wal
 
 	CP8::CP8( unsigned short* p )
 	{
-		_toUnicode = new unsigned short[0x100];
-		_fromUnicode = new unsigned char*[0x100];
+		_toUnicode = new unsigned short[0x100]();
+		_fromUnicode = new unsigned char*[0x100]();
 		_fromUnicode[0] = new unsigned char[0x100];
 		int i;
 
@@ -78,7 +78,17 @@ namespace wal
 			}
 		}
 	}
-
+	
+	CP8::~CP8()
+	{
+		for(int i=0;i<0x100;i++)
+		{
+			if(_fromUnicode[i]!=0)
+				delete[] _fromUnicode[i];
+		}
+		delete[] _fromUnicode;
+		delete[] _toUnicode;
+	}
 
 	char* GetNext_CS8( char* s, char* endLine ) { return s + 1 >= endLine ? 0 : ++s; }
 	char* _GetPrev_CS8( char* s, char* firstLine ) {   return s > firstLine ? s - 1 : 0; }

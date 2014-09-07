@@ -91,6 +91,7 @@ void NCWin::SetToolbarView()
 
 int uiClassNCWin = GetUiID( "NCWin" );
 int uiCommandLine = GetUiID( "command-line" );
+int uiAutocomplete = GetUiID( "Autocomplete" );
 
 int NCCommandLine::UiGetClassId()
 {
@@ -1493,13 +1494,25 @@ void  NCWin::PasteFileNameToCommandLine( const unicode_t* path )
 	}
 }
 
-void NCWin::PastePanelPath( PanelWin* panel )
+void NCWin::PastePanelCurrentFileURI( PanelWin* p )
 {
-	if ( _mode != PANEL ) { return; }
+	if ( !p || _mode != PANEL ) { return; }
 
-	if ( panel->IsVisible() )
+	if ( p->IsVisible() )
 	{
-		FSString S = panel->UriOfDir();
+		FSString S = p->UriOfCurrent();
+
+		PasteFileNameToCommandLine( S.GetUnicode() );
+	}
+}
+
+void NCWin::PastePanelPath( PanelWin* p )
+{
+	if ( !p || _mode != PANEL ) { return; }
+
+	if ( p->IsVisible() )
+	{
+		FSString S = p->UriOfDir();
 
 		PasteFileNameToCommandLine( S.GetUnicode() );
 	}
@@ -1507,7 +1520,7 @@ void NCWin::PastePanelPath( PanelWin* panel )
 
 void NCWin::CtrlEnter()
 {
-	if ( _mode != PANEL ) { return; }
+	if ( !_panel || _mode != PANEL ) { return; }
 
 	if ( _panel->IsVisible() )
 	{
@@ -1519,23 +1532,9 @@ void NCWin::CtrlEnter()
 
 void NCWin::CtrlF()
 {
-	if ( _mode != PANEL ) { return; }
-
-	if ( _panel->IsVisible() )
+	if ( _panel->IsVisible() && _edit.IsVisible() )
 	{
-		FSString uri = _panel->UriOfCurrent();
-		const unicode_t* str = uri.GetUnicode();
-		bool spaces = StrHaveSpace( str );
-
-		if ( spaces ) { _edit.Insert( '"' ); }
-
-		_edit.Insert( str );
-
-		if ( spaces ) { _edit.Insert( '"' ); }
-
-		_edit.Insert( ' ' );
-
-		NotifyAutoComplete();
+		PastePanelCurrentFileURI( _panel );
 	}
 }
 
@@ -2061,7 +2060,7 @@ void NCWin::CheckKM( bool ctrl, bool alt, bool shift, bool pressed, int ks )
 {
 	ButtonWinData* data = 0;
 
-	if ( ks == VK_LCONTROL || ks == VK_RCONTROL ) { ctrl = pressed; }
+	if ( ks == VK_LCONTROL || ks == VK_RCONTROL || ks == VK_RMETA || ks == VK_LMETA ) { ctrl = pressed; }
 
 	if ( ks == VK_LSHIFT || ks == VK_RSHIFT ) { shift = pressed; }
 
@@ -2189,6 +2188,11 @@ bool NCCommandLine::EventKey( cevent_key* pEvent )
 NCAutocompleteList::NCAutocompleteList( WTYPE t, unsigned hints, int nId, Win* _parent, SelectType st, BorderType bt, crect* rect )
 : TextList( t, hints, nId, _parent, st, bt, rect )
 {
+}
+
+int NCAutocompleteList::UiGetClassId()
+{
+	return uiAutocomplete;
 }
 
 bool NCAutocompleteList::EventKey( cevent_key* pEvent )
@@ -2474,6 +2478,9 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					_panel->KeyHome( shift, &_shiftSelectType );
 					return true;
 
+#if defined( __APPLE__)
+				case FC( VK_UP, KM_CTRL ):
+#endif
 				case FC( VK_PRIOR, KM_SHIFT ):
 				case VK_PRIOR:
 					_panel->KeyPrior( shift, &_shiftSelectType );
@@ -2491,6 +2498,9 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 					_panel->DirEnter();
 					return true;
 
+#if defined( __APPLE__)
+				case FC( VK_DOWN, KM_CTRL ):
+#endif
 				case FC( VK_NEXT, KM_SHIFT ):
 				case VK_NEXT:
 					_panel->KeyNext( shift, &_shiftSelectType );
@@ -2700,10 +2710,16 @@ bool NCWin::OnKeyDown( Win* w, cevent_key* pEvent, bool pressed )
 
 			return true;
 
+#if defined( __APPLE__)
+			case FC( VK_DOWN, KM_CTRL ):
+#endif
 			case VK_NEXT:
 				_terminal.PageDown();
 				break;
 
+#if defined( __APPLE__)
+			case FC( VK_UP, KM_CTRL ):
+#endif
 			case VK_PRIOR:
 				_terminal.PageUp();
 				break;

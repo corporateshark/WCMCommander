@@ -170,6 +170,8 @@ bool PanelSearchWin::EventChildKey( Win* child, cevent_key* pEvent )
 		case VK_CONTROL:
 		case VK_SHIFT:
 #endif
+		case VK_LMETA:
+		case VK_RMETA:
 		case VK_LCONTROL:
 		case VK_RCONTROL:
 		case VK_LSHIFT:

@@ -17,7 +17,13 @@ static char uiDefaultWcmRules[] =
 
    "command-line:!enabled { background: 0; }"
    "command-line:focus {color: 0xFFFFFF; background: 0; mark-color: 0xFFFFFF; mark-background : 0x800000; frame-color: 0xD8E9EC }"
-   "command-line {color: 0; background: 0; frame-color: 0xD8E9EC; mark-color: 0xFFFFFF; mark-background : 0x808080; }"
+   "command-line {color: 0xFFFFFF; background: 0; frame-color: 0xD8E9EC; mark-color: 0xFFFFFF; mark-background : 0x808080; }"
+
+   "Autocomplete:!enabled { background: 0xB0B000; }"
+   "Autocomplete:current-item {color: 0xFFFFFF; background: 0x000000; mark-color: 0xFFFFFF; mark-background : 0x000000; frame-color: 0x000000 }"
+   "Autocomplete:current-item:odd {color: 0xFFFFFF; background: 0x000000; mark-color: 0xFFFFFF; mark-background : 0x000000; frame-color: 0x000000 }"
+   "Autocomplete:odd {color: 0xFFFFFF; background: 0xA9A900; frame-color: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x000000; }"
+   "Autocomplete {color: 0xFFFFFF; background: 0xB0B000; frame-color: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x000000; }"
 
    "Panel { color: 0xFFFF80; background: 0x800000; }"
    "Panel@item:exe { color: 0x80FF80 }"
@@ -28,7 +34,7 @@ static char uiDefaultWcmRules[] =
    "Panel@item:selected { color: 0x00FFFF }"
    "Panel@item:selected-panel:current-item { background: 0xB0B000 }"
 //"Panel@item:selected-panel:current-item:oper-state { background: 0xFF }"
-   "Panel ScrollBar, Viewer ScrollBar, Editor ScrollBar {  background: 0xA0A000; button-color: 0xFFFF00 }"
+   "Panel ScrollBar, Viewer ScrollBar, Editor ScrollBar {  background: 0xB0B000; button-color: 0x909000 }"
    "Panel { border-color1: 0x000000; border-color2: 0xFFFFFF; border-color3: 0xFFFFFF; border-color4: 0x000000;"
    " vline-color1: 0xFFFFFF; vline-color2:0x707070; vline-color3:0x700000;"
    " line-color:0xFFFFFF; summary-color: 0xFFFFFF; }"
@@ -48,10 +54,10 @@ static char uiDefaultWcmRules[] =
    "PopupMenu@item:current-item { background: 0x404000; } "
    "PopupMenu { background: 0xC0C000; frame-color: 0xFFFFFF; } "
 
-   "#drive-dlg { background: 0xB0B000; }"
-   "#drive-dlg * { background: 0xB0B000; color: 0xFFFFFF; }"
-   "#drive-dlg * @item { color: 0xFFFFFF; background: 0xB0B000; comment-color: 0xFFFF00; first-char-color:0xFFFF }"
-   "#drive-dlg * @item:current-item { color: 0xFFFFFF;  background: 0; comment-color: 0xFFFF00; first-char-color:0xFFFF }"
+   "drive-dlg { background: 0xB0B000; }"
+   "drive-dlg * { background: 0xB0B000; color: 0xFFFFFF; }"
+   "drive-dlg * @item { color: 0xFFFFFF; background: 0xB0B000; comment-color: 0xCCCCCC; first-char-color:0xFFFF }"
+   "drive-dlg * @item:current-item { color: 0xFFFFFF;  background: 0; comment-color: 0xCCCCCC; first-char-color:0xFFFF }"
 
    "#messagebox-red { color: 0xFFFFFF; background: 0xFF; }"
    "#messagebox-red Static { color: 0xFFFFFF; background: 0xFF; }"
@@ -87,7 +93,7 @@ static char uiDefaultWcmRules[] =
 
 
 static char uiBlackWcmRules[] =
-   "* {color: 0; background: 0xA0B0B0; focus-frame-color : 0x00A000; button-color: 0xD8E9EC;  }"
+   "* {color: 0; background: 0xA0B0B0; hotkey-color:0x0000FF; focus-frame-color : 0x00A000; button-color: 0xD8E9EC;  }"
    "*@item:odd		{color: 0xFFFFFF; background: 0x101010; }"
    "*@item:current-item:focus	{color: 0xFFFFFF; background: 0x800000; }"
    "*@item:current-item	{color: 0xFFFFFF; background: 0x505050; }"
@@ -101,6 +107,12 @@ static char uiBlackWcmRules[] =
    "command-line:!enabled { background: 0; }"
    "command-line:focus {color: 0xFFFFFF; background: 0; mark-color: 0xFFFFFF; mark-background : 0x800000; frame-color: 0xD8E9EC }"
    "command-line {color: 0; background: 0; frame-color: 0xD8E9EC; mark-color: 0xFFFFFF; mark-background : 0x808080; }"
+
+   "Autocomplete:!enabled { background: 0xB0B000; }"
+   "Autocomplete:current-item {color: 0xFFFFFF; background: 0xB0B000; mark-color: 0xFFFFFF; mark-background : 0x000000; frame-color: 0x000000 }"
+   "Autocomplete:current-item:odd {color: 0xFFFFFF; background: 0xB0B000; mark-color: 0xFFFFFF; mark-background : 0x000000; frame-color: 0x000000 }"
+   "Autocomplete:odd {color: 0xFFFFFF; background: 0x000000; frame-color: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x000000; }"
+   "Autocomplete {color: 0xFFFFFF; background: 0x000000; frame-color: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x000000; }"
 
    "Panel { color: 0xA0A0A0; background: 0x000000; }"
    "Panel@item:exe { color: 0x80FF80 }"
@@ -171,7 +183,7 @@ static char uiBlackWcmRules[] =
 //!*************************************************************************************************
 
 static char uiWhiteWcmRules[] =
-   "* {color: 0; background: 0xD8E9EC; focus-frame-color : 0x00A000; button-color: 0xD8E9EC;  }"
+   "* {color: 0; background: 0xD8E9EC; hotkey-color:0x0000FF; focus-frame-color : 0x00A000; button-color: 0xD8E9EC;  }"
    "*@item:odd		{color: 0; background: 0xE0FFE0; }"
    "*@item:current-item	{color: 0xFFFFFF; background: 0x800000; }"
    "*@item			{color: 0; background: 0xFFFFFF; }"
@@ -184,6 +196,12 @@ static char uiWhiteWcmRules[] =
    "command-line:!enabled { background: 0xD8E9EC; }"
    "command-line:focus {color: 0; background: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x800000; frame-color: 0xD8E9EC }"
    "command-line {color: 0; background: 0xFFFFFF; frame-color: 0xD8E9EC; mark-color: 0xFFFFFF; mark-background : 0x808080; }"
+
+   "Autocomplete:!enabled { background: 0xFFFFFF; }"
+   "Autocomplete:current-item {color: 0xFFFFFF; background: 0x800000; mark-color: 0xFFFFFF; mark-background : 0x800000; frame-color: 0x800000 }"
+   "Autocomplete:current-item:odd {color: 0xFFFFFF; background: 0x800000; mark-color: 0xFFFFFF; mark-background : 0x800000; frame-color: 0x800000 }"
+   "Autocomplete:odd {color: 0x000000; background: 0xFFFFFF; frame-color: 0xFFFFFF; mark-color: 0xFFFFFF; mark-background : 0x000000; }"
+   "Autocomplete {color: 0x000000; background: 0xFFFFFF; frame-color: 0x000000; mark-color: 0xFFFFFF; mark-background : 0x000000; }"
 
    "Panel { color: 0x000000; background: 0xF8F8F8; }"
    "Panel@item:odd { background: 0xE0E0E0 }"

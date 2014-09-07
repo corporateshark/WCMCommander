@@ -2103,10 +2103,16 @@ bool EditWin::EventKey( cevent_key* pEvent )
 				break;
 
 			case VK_DOWN:
+#if defined( __APPLE__)
+				if ( ctrl ) PageDown( shift ); else
+#endif
 				CursorDown( shift );
 				break;
 
 			case VK_UP:
+#if defined( __APPLE__)
+				if ( ctrl ) PageUp( shift ); else
+#endif
 				CursorUp( shift );
 				break;
 

@@ -60,6 +60,8 @@ class NCDialog: public OperThreadWin
 	ccollect<clPtr<Button> > _bList;
 	int enterCmd;
 
+	int m_nId;
+
 protected:
 	Win* GetDownButton();
 	int GetFocusButtonNum();
