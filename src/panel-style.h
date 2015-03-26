@@ -37,7 +37,7 @@ struct PanelColors
 
 	int hLine;
 
-	int v1; //разрисовка верт линий
+	int v1; //painting of vertical lines
 	int v2;
 	int v3;
 

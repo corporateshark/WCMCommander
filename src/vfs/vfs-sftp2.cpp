@@ -781,8 +781,9 @@ int FSSftp::OpenCreate  ( FSPath& path, bool overwrite, int mode, int flags, int
 	{
 		if ( !overwrite )
 		{
-			/* странная херня, при наличии файла с  O_EXCL,  выдает не EEXIST, а "прерван системный вызов"
-			   поэтому встанил эту дурацкую проверку на наличие
+			/*
+			   it was strange that sftp_open with O_EXCL returns "generc error" when files exists, instead of EEXIST
+			   then added this stupid check for existence
 			*/
 			LIBSSH2_SFTP_ATTRIBUTES attr;
 			int ret;
@@ -1356,8 +1357,8 @@ int FSSftp::StatVfs( FSPath& path, FSStatVfs* vst, int* err, FSCInfo* info )
 
 	return 0;
 
-	///////////////////// отключено
-	///////////////////// зависает (libssh2_sftp_statvfs постоянно возвращает LIBSSH2_ERROR_EAGAIN)
+	///////////////////// disabled
+	///////////////////// freezes (libssh2_sftp_statvfs constantly returns LIBSSH2_ERROR_EAGAIN)
 	/*
 	printf( "FSSftp::StatVfs 1 \n" );
 	MutexLock lock( &mutex );

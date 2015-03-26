@@ -84,7 +84,7 @@ class W32Cons : public Win
 {
 	Layout _lo;
 	ScrollBar _scroll;
-	CScreen screen; //это ТОЛЬКО видимая область экрана
+	CScreen screen; //this is ONLY visible screen area
 	Buf2D<CHAR_INFO> _temp;
 	HANDLE stopHandle;
 

@@ -112,7 +112,7 @@ inline   int SBigNode::MinLen()
 }
 
 
-static char* VSearchStr( char* s, char* end, SNode* list ) //считается, что после end есть строка длины(list)-1
+static char* VSearchStr( char* s, char* end, SNode* list ) //considered, that after end there is string with width (list)-1
 {
 	for ( ; s < end; s++ )
 		if ( list[0].Eq( *s ) )

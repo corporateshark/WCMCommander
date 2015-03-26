@@ -201,7 +201,7 @@ clPtr<FS> ParzeURI(const unicode_t* uri, FSPath& path, const std::vector<clPtr<F
 
 	if (uri[0] == 'f' && uri[1] == 'i' && uri[2] == 'l' && uri[3] == 'e' && uri[4] == ':' && uri[5] == '/' && uri[6] == '/')
 	{
-		uri += 6;   //оставляем 1 символ '/'
+		uri += 6;   //left one '/' symbol
 	}
 
 
@@ -313,7 +313,7 @@ clPtr<FS> ParzeCurrentSystemURL( FSPath& path )
 
 		if ( errno != ERANGE )
 		{
-			throw_syserr( 0, "Botva" );
+			throw_syserr( 0, "internal error" );
 		}
 
 		bufSize *= 2;

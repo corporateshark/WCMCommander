@@ -72,7 +72,7 @@ struct HelpStyle
 	unsigned Bg() { return this ? bg : 0xFFFFFF; }
 };
 
-//HelpGC сделан для кэширования операций GetTextExtents а то в X11 (со стандартными X11 фонтами) это пиздец как медленно
+//HelpGC for caching operations with GetTextExtents because in X11 (with standard X11 fonts) its too slow
 
 class HelpGC
 {
@@ -135,17 +135,17 @@ HelpGC::~HelpGC() {};
 struct HelpNode: public iIntrusiveCounter
 {
 	HelpStyle* _style;
-	//минимальная и максимальная ширина
-	int _min; //если 0 то считается пробелом и может быть проигнорирован в начале или конце строки
+	//minimum and maximum width
+	int _min; //if 0 then its space and can be ignored at the begining or at the end of string
 	int _max;
 
-	cpoint _pos; //относительно хозяина (хозяином и выставляется после prepare)
-	cpoint _size; //текущая ширина и высота
+	cpoint _pos; //relative to owner (set by owner after prepare)
+	cpoint _size; //current width and height
 
 	HelpNode( HelpStyle* style, int min = 0, int max = 10000 ): _style( style ), _min( min ), _max( max ), _pos( 0, 0 ), _size( 0, 0 ) {}
-	virtual void Init( HelpGC& gc ); //инициализируется по данным и определяет min и max
-	virtual void Prepare( int width ); //подготовка к размеру, выставляет _size
-	virtual void Paint( HelpGC& gc, int x, int y, bool selected, crect visibleRect ); //нарисовать в нужном месте (обязан зарисовать весь размер _size)
+	virtual void Init( HelpGC& gc ); //initialized by data, define min and max
+	virtual void Prepare( int width ); //size preparation
+	virtual void Paint( HelpGC& gc, int x, int y, bool selected, crect visibleRect ); //draw in the specified place (required to fill all _size)
 	virtual ~HelpNode();
 private:
 	HelpNode() {}
@@ -183,7 +183,7 @@ struct HelpNodeV: public HelpNode
 	virtual ~HelpNodeV();
 };
 
-//текст фиксированной длины и ширины
+//text with fixed width and height
 struct HelpNodeWord: public HelpNode
 {
 	std::vector<unicode_t> _txt;
@@ -195,14 +195,14 @@ struct HelpNodeWord: public HelpNode
 	virtual ~HelpNodeWord();
 };
 
-//список элементов (по умолчанию расположенных вертикально)
+//list of elements (placed vertically by default)
 struct HelpNodeList: public HelpNode
 {
 
 	struct Node
 	{
 		clPtr<HelpNode> item;
-		bool paint; //расчитывается ProbeWidth
+		bool paint; //precalculating ProbeWidth
 		Node() {}
 		Node( clPtr<HelpNode> w ): item( w ) {}
 	};
@@ -219,7 +219,7 @@ struct HelpNodeList: public HelpNode
 	virtual ~HelpNodeList();
 };
 
-//абзац из элементов, элементы могут занать несколько строк
+//paragraph with elements, may fill several lines
 struct HelpNodeParagraph: public HelpNodeList
 {
 
@@ -248,15 +248,15 @@ struct HelpNodeTable: public HelpNode
 
 	ccollect<clPtr<ccollect<clPtr<HelpNode> > > > _tab;
 
-	int _cols; //заполняется Init
-	std::vector<Pair> _colPair; //создается Init
+	int _cols; //setup by Init
+	std::vector<Pair> _colPair; //created by Init
 
 	void Append( clPtr<HelpNode> item ) { _tab[_tab.count() - 1]->append( item ); }
 	void NL() { _tab.append( new ccollect< clPtr<HelpNode> > ); }
 
 	HelpNodeTable( HelpStyle* s ): HelpNode( s )
 	{
-		NL(); //добавляем первую строку
+		NL(); //add new line
 	};
 
 	virtual void Init( HelpGC& gc );
@@ -307,7 +307,7 @@ HelpNodeSpace::~HelpNodeSpace() {}
 
 
 
-//регион (прямоугольный) из которого можно удалить прямоугольники и потом заполнить (не трогая удаленную площадь)
+//region (rectangle) from which rectangles may be deleted and then filled up (without touching deleted area)
 class HelpRgn
 {
 	struct Node
@@ -360,7 +360,7 @@ void HelpRgn::Minus( crect rect )
 	while ( *pp )
 	{
 		{
-			//проверяем пересечение
+			//check crossing
 			crect& pr = pp[0]->rect;
 
 			if ( pr.top >= rect.bottom || pr.bottom <= rect.top ||
@@ -491,7 +491,7 @@ void HelpNodeTable::Prepare( int width )
 
 	for ( i = 0; i < _cols; i++ ) { cw[i] = _colPair[i].minV; }
 
-	//распределяем добавочную длину
+	//distribute additional width
 	while ( w < width && n > 0 )
 	{
 		int plus = ( width - w ) / n;
@@ -670,7 +670,7 @@ void HelpNodeList::Init( HelpGC& gc )
 
 void HelpNodeList::Prepare( int width )
 {
-	//вертикальный расчет
+	//vertical calculation
 	int count = _list.count();
 
 	int w = 0;
@@ -765,13 +765,13 @@ void HelpNodeParagraph::Prepare( int width )
 
 	for ( i = 0; i < _list.count(); i++ )
 	{
-		_list[i].item->Prepare( ( i == _list.count() - 1 ) ? width : 0 ); //для непоследних элементовпо минимальному размеру
+		_list[i].item->Prepare( ( i == _list.count() - 1 ) ? width : 0 ); //latest elements got minimum size
 		int n = _list[i].item->_size.x;
 
 		if ( pos > 0 && pos + n > w )
 		{
 			{
-				//выравниваем
+				//align
 				if ( _align == ALIGN_RIGHT )
 				{
 					for ( int t = 0; t < curLine.count(); t++ ) { curLine[t]->item->_pos.x += w - pos; }
@@ -801,7 +801,7 @@ void HelpNodeParagraph::Prepare( int width )
 		_list[i].item->_pos.x = pos;
 		_list[i].item->_pos.y = h;
 
-		_list[i].paint = pos > 0 || _list[i].item->_min != 0; //игнорируем пробелы в начале строки
+		_list[i].paint = pos > 0 || _list[i].item->_min != 0; //ignore spaces at the beginning of the string
 
 		if ( _list[i].paint )
 		{
@@ -816,7 +816,7 @@ void HelpNodeParagraph::Prepare( int width )
 		}
 	}
 
-	if ( curLine.count() > 0 ) //выравниваем
+	if ( curLine.count() > 0 ) //align
 	{
 		if ( _align == ALIGN_RIGHT )
 			for ( int t = 0; t < curLine.count(); t++ ) { curLine[t]->item->_pos.x += w - pos; }
@@ -863,23 +863,23 @@ HelpParzerMem::~HelpParzerMem() {}
 
 /*
 
-   / - экранирующий символ, т.е. // - /
+   / - escape symbol, e.g. // - /
 
-   /l /r /c /w -выравнивание абзаца (побеждает последний в абзаце) по умолчанию /l
+   /l /r /c /w - paragraph align (last one wins), /l - by default
 
-   // %+ %- включить, выключить автоперенос (в пределах блока) по умолчанию включен
+   // %+ %- turnof, turnoff auto word wrap (within block), turnon by default
 
-   <s [id]> смена текущего стиля (в пределах блока)
-   /n переход на новый абзац
-   <v [N]> -вертикальная вставка
-   <h [N]> -горизонтальная вставка (размар 1/10 от ширины символа текущего фонта (средней ширины A B и С))
+   <s [id]> change current style (within block)
+   /n switch to new paragraph
+   <v [N]> - vertical insert
+   <h [N]> - horizontal insert (size 1/10 by symbol width of current font (average width A B and С))
 
-   @t - таблица
-   @n - конец строки таблицы
-   @c - конец колонки в строке таблицы
-   @e - конец таблицы
+   @t - table
+   @n - the end of table's row
+   @c - the end of table row's column
+   @e - the end of table
 
-   блок ограничивается символами { и }
+   block surrounded by symbols { and }
 
 */
 
@@ -1280,7 +1280,7 @@ clPtr<HelpNode> HelpParzer::Parze()
 			case TOK_TAB:
 				NextToken();
 				pPar->Append( ParzeTable() );
-				//ParzeTable забирает токен окончания таблицы
+				//ParzeTable consumes token of end of table
 				continue;
 
 			default:
@@ -1924,7 +1924,7 @@ void Help( NCDialogParent* parent, const char* theme )
 {
 	HelpDlg dlg( parent, _LT( "Help" ), theme );
 
-	if ( !dlg.Ok() ) { return; } //не нашел тему
+	if ( !dlg.Ok() ) { return; } //subject not found
 
 	dlg.DoModal();
 }

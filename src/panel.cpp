@@ -467,14 +467,14 @@ void PanelWin::OnChangeStyles()
 	_lo.LineSet( 4, 1 );
 
 
-	if ( _itemHeight <= 16 ) //чтоб иконки влезли
+	if ( _itemHeight <= 16 ) //for icons to fit
 	{
 		_itemHeight = 16;
 	}
 
-	RecalcLayouts(); //получается двойной пересчет, но хер ли делать
+	RecalcLayouts(); //may be overcalculated, but needed
 
-//как в EventSize (подумать)
+//as in EventSize (think about it)
 	Check();
 	bool v = _scroll.IsVisible();
 	SetCurrent( _current );
@@ -1760,7 +1760,7 @@ void PanelWin::LoadPath( clPtr<FS> fs, FSPath& paramPath, FSString* current, clP
 
 		_operSelected = selected;
 		_operData.SetNewParams( fs, paramPath );
-		RunNewThread( "Read directory", ReadDirThreadFunc, &_operData ); //может быть исключение
+		RunNewThread( "Read directory", ReadDirThreadFunc, &_operData ); //may throw exception
 		Invalidate();
 	}
 	catch ( cexception* ex )
@@ -1810,8 +1810,8 @@ void PanelWin::OperThreadStopped()
 		clPtr<FSList> list = _operData.list;
 		clPtr<cstrhash<bool, unicode_t> > selected = _operSelected;
 
-//??? почему-то иногда list.ptr() == 0 ???
-//!!! найдено и исправлено 20120202 в NewThreadID стоял & вместо % !!!
+//??? why sometimes list.ptr() == 0 ???
+//!!! found and fixed 20120202 in NewThreadID was & instead of % !!!
 
 		switch ( _operType )
 		{
@@ -2203,7 +2203,7 @@ void PanelWin::DirEnter(bool OpenInExplorer)
 void PanelWin::DirRoot()
 {
 	FSPath p;
-	p.PushStr( FSString() ); //у абсолютного пути всегда пустая строка в начале
+	p.PushStr( FSString() ); //in absolute path empty sting is always at the beginning
 	LoadPath( GetFSPtr(), p, 0, 0, RESET );
 }
 

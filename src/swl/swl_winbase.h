@@ -20,7 +20,7 @@ namespace wal
 	enum BASE_COMMANDS
 	{
 		_CMD_BASE_BEGIN_POINT_ = -99,
-		CMD_ITEM_CLICK,      //может случаться в объектах с подэлементами при нажатии enter или doubleclick (например VList)
+		CMD_ITEM_CLICK,      //may happen in objects with sub-elements when Enter is pressed or doubleclick (VList for example)
 		CMD_ITEM_CHANGED,
 		CMD_SBUTTON_INFO, //with subcommands
 		CMD_SCROLL_INFO,     //with subcommands
@@ -129,10 +129,10 @@ namespace wal
 	class EditBuf
 	{
 		std::vector<unicode_t> data;
-		int size;   //размер буфера
-		int count;  //количесво символов в строке
-		int cursor; //позиция курсора
-		int marker; //точка, от которой до курсора - выделенный блок
+		int size;   //size of the buffer
+		int count;  //count of symbols in string
+		int cursor; //cursor position
+		int marker; //point, from which to cursor is selected block
 
 		enum { STEP = 0x100 };
 		void SetSize( int n );
@@ -312,7 +312,7 @@ namespace wal
 		//MenuTextInfo text;
 		std::vector<unicode_t> text;
 		ALIGN align;
-		int width; //ширина в ВЫСОТАХ фонта
+		int width; //width in font HEIGHTS
 	public:
 		StaticLine( int nId, Win* parent, const unicode_t* txt, crect* rect = nullptr, ALIGN al = LEFT, int w = -1 );
 		virtual void Paint( GC& gc, const crect& paintRect );
@@ -382,14 +382,14 @@ namespace wal
 		bool vertical;
 		ScrollInfo si;
 
-		int len; //расстояние между крайними кнопками
-		int bsize; // размер средней кнопки
-		int bpos; // расстояние от средней кнопки до первой
+		int len; //length between end buttons
+		int bsize; // length of middle button
+		int bpos; // length from middle to first button
 
 		crect b1Rect, b2Rect, b3Rect;
 
-		bool trace; // состояние трассировки
-		int traceBPoint; // точка нажатия мыши от начала средней кнопки (испю при трассировке)
+		bool trace; // state of tracing
+		int traceBPoint; // point of mouse press from the beginning of middle button (set when tracing)
 
 		bool autoHide;
 
@@ -445,7 +445,7 @@ namespace wal
 
 		Layout layout;
 
-		crect listRect; //rect в котором надо рисовать список
+		crect listRect; //rect in which we will draw the list
 		crect scrollRect;
 
 		IntList selectList;

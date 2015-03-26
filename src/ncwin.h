@@ -351,7 +351,7 @@ private:
 	void ExecNoTerminalProcess( const unicode_t* p );
 #endif
 
-	void RightButtonPressed( cpoint point ); //вызывается из панели, усли попало на имя файла/каталого
+	void RightButtonPressed( cpoint point ); //called from panel, if point on file/dir
 
 	clPtr<FSList> GetPanelList();
 

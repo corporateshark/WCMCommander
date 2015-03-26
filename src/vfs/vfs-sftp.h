@@ -18,7 +18,7 @@
 class FSSftp : public FS
 {
 	mutable Mutex infoMutex;
-	FSSftpParam _infoParam; //должно быть то же самое что и в operParam просто мьютексв разные, и который просто mutex может блокироваться надолго (на период работы функции)
+	FSSftpParam _infoParam; //needs to be the same as in operParam just mutexes are different, and whick is simple mutex may be blocked for long (while method is running)
 
 	Mutex mutex;
 
@@ -83,7 +83,7 @@ void InitSSH();
 class FSSftp : public FS
 {
 	mutable Mutex infoMutex;
-	FSSftpParam _infoParam; //должно быть то же самое что и в operParam просто мьютексв разные, и который просто mutex может блокироваться надолго (на период работы функции)
+	FSSftpParam _infoParam; //needs to be the same as in operParam just mutexes are different, and whick is simple mutex may be blocked for long (while method is running)
 
 	Mutex mutex;
 

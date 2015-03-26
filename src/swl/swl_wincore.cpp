@@ -146,7 +146,7 @@ namespace wal
 
 //printf("tim%i (%i,%i)\n",1, tim, ts->last);
 
-			if ( tim - ts->last >= ts->period ) //! условие должно соответствовать условию *
+			if ( tim - ts->last >= ts->period )
 			{
 				ts->last = tim;
 				RunTimersNode node;
@@ -179,7 +179,7 @@ namespace wal
 			//DWORD
 			unsigned t = tim - ts->last;
 
-			if ( t >= ts->period ) //! условие *
+			if ( t >= ts->period )
 			{
 				minTim = 0;
 			}
@@ -767,7 +767,7 @@ namespace wal
 
 		int err = thread_create( const_cast<thread_t*>( &( p->th ) ), _swl_win_thread_func, p );
 
-		if ( err ) { throw_syserr( err, "can`t create window thread" ); }
+		if ( err ) { throw_syserr( err, "can't create window thread" ); }
 
 		unsigned tN = th_key( p->th ) % WTH_HASH_SIZE;
 		unsigned wN = win_key( w ) % WTH_HASH_SIZE;
@@ -852,7 +852,7 @@ namespace wal
 			MutexLock lock( &wtHash.mutex );
 			WTHNode* p = wtHash.cmdFirst;
 
-			if ( !p ) { break; } //botva?
+			if ( !p ) { break; }
 
 			if ( p->cmd == WTH_CMD_END )
 			{
@@ -1060,7 +1060,7 @@ namespace wal
 
 		if ( a._width <= 0 || a._height <= 0 ) { return; }
 
-		//упрощенная схема, не очень качественно, зато быстро
+		//lost scheme, not highest quality, but fast
 
 		std::vector< std::pair<int, int> > p( w );
 

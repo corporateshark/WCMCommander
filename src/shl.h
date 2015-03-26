@@ -67,7 +67,7 @@ namespace SHL
 
 		union
 		{
-			unsigned char _ch[2]; //2 символа для case unsens (если sens то в ch[1] должен быть 0), Сейчас не используется такая схема
+			unsigned char _ch[2]; //2 symbols for case unsens (if sens then in ch[1] must be 0), now doesn't work like this
 			Chars* _chars;
 		};
 
@@ -89,7 +89,7 @@ namespace SHL
 	{
 		friend class Shl;
 		friend class State;
-		//обязан быть хоть один узел с длинной НЕ * иначе ВЕЧНЫЙ цикл
+		//should be at least one node with width other than * or infinite loop
 		ccollect<RuleNode, 100> _list;
 		ColorId _color;
 		Words*    _words; //case sensitive

@@ -10,12 +10,12 @@
 #include <array>
 
 /*
-   надо сделать, чтоб можно было выяснить запущен процесс или нет
+   need to make it possible to detect if process is running
 
-   курсор глючит
-   программы надо сначала так поискать, а потом отдавать cmd если не нашлись
+   cursor is not stable
+	programs should be searched first, and then given to cmd if not found
 
-   надо наладить чтение блоков>64k в клипбоард (ReadConsoleOutputW большие блоки нечитает)
+	need to fix reading of blocks >64k into clipboard (ReadConsoleOutputW doesn't read big blocks)
 */
 
 int uiClassTerminal = GetUiID( "Terminal" );
@@ -818,7 +818,7 @@ bool W32Cons::DrawChanges()
 			srect.Right = C - 1;
 			srect.Bottom = _firstRow + row + n - 1;
 
-			//!непонятки (если этого не поставить, то ReadConsoleOutputW портит память, хотя должна отработать выход за пределы
+			//not clear, if not doing this, then ReadConsoleOutputW corrupts memory, but should return out of bounds
 			if ( srect.Bottom >= consLastInfo.dwSize.Y )
 			{
 				srect.Bottom = consLastInfo.dwSize.Y - 1;
@@ -910,7 +910,7 @@ void W32Cons::EventTimer( int tid )
 	}
 }
 
-static int FindLastNoSpace( CHAR_INFO* s, int count ) //возвращает номер пробела, стоящего за последним непробелом или count
+static int FindLastNoSpace( CHAR_INFO* s, int count ) //returns space number standing after the last non-space char or count
 {
 	int n = -1;
 
@@ -920,7 +920,7 @@ static int FindLastNoSpace( CHAR_INFO* s, int count ) //возвращает н�
 	return n + 1;
 }
 
-//!(Доработать) Надо сделать поблочное чтение ReadConsoleOutputW (блоки<64k) иначе большие блоки не читаются
+//need to fix reading of blocks >64k into clipboard (ReadConsoleOutputW doesn't read big blocks)
 
 bool W32Cons::GetMarked( ClipboardText& ct )
 {
@@ -1249,8 +1249,8 @@ void W32Cons::Paint( wal::GC& gc, const crect& paintRect )
 	int R = screen.Rows();
 	int C = screen.Cols();
 
-//почему то при больших объемах ReadConsoleOutputW возвращает ERROR_NOT_ENOUGH_MEMORY
-//приходится читать блоками
+//for some reason when reading big blocks ReadConsoleOutputW returns ERROR_NOT_ENOUGH_MEMORY
+//that's why we read by chunks
 
 	if ( R > 0 && C > 0 )
 	{
@@ -1286,7 +1286,7 @@ void W32Cons::Paint( wal::GC& gc, const crect& paintRect )
 			srect.Right = C - 1;
 			srect.Bottom = _firstRow + row + n - 1;
 
-			//!непонятки (если этого не поставить, то ReadConsoleOutputW портит память, хотя должна отработать выход за пределы
+			//not clear, if not doing this, then ReadConsoleOutputW corrupts memory, but should return out of bounds
 			if ( srect.Bottom >= consLastInfo.dwSize.Y )
 			{
 				srect.Bottom = consLastInfo.dwSize.Y - 1;
@@ -1329,7 +1329,7 @@ void W32Cons::Paint( wal::GC& gc, const crect& paintRect )
 W32Cons::~W32Cons()
 {
 	SetConsoleCtrlHandler( ConsoleHandlerRoutine, FALSE );
-	//пытаемся закрыть консоль и если не получается, то хоть показать ее тогда
+	//try to close console and if not done, then show it at least
 	HWND h = ::GetConsoleWindow();
 
 	if ( h )
@@ -1337,12 +1337,4 @@ W32Cons::~W32Cons()
 		::SendMessage( h, WM_CLOSE, 0, 0 );
 		::ShowWindow( h, SW_SHOW );
 	}
-};
-
-
-
-
-
-
-
-
+}

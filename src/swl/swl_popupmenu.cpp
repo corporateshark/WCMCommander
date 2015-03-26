@@ -13,7 +13,7 @@ namespace wal
 
 	MenuData::MenuData() {}
 
-// временная штука
+// temporary thing
 	std::unordered_map<int, clPtr<cicon> > iconList;
 
 	cicon* GetCmdIcon( int cmd )

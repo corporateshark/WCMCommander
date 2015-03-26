@@ -14,7 +14,7 @@
 /////////////////////////////////////////////// FSPath///////////////////////////////
 
 
-void FSPath::SetItem( int n, int cs, const void* v ) // n>=0 && n<=Count(); если n == Count то в конец добавляется еще один элемент
+void FSPath::SetItem( int n, int cs, const void* v ) // n>=0 && n<=Count(); if n == Count then add one more element to the end
 {
 	if ( n < 0 || n > Count() ) { return; }
 
@@ -24,13 +24,13 @@ void FSPath::SetItem( int n, int cs, const void* v ) // n>=0 && n<=Count(); ес
 	else { data[n] = FSString( cs, v ); }
 }
 
-void FSPath::SetItemStr( int n, const FSString& str ) // n>=0 && n<=Count(); если n == Count то в конец добавляется еще один элемент
+void FSPath::SetItemStr( int n, const FSString& str ) // n>=0 && n<=Count(); if n == Count then add one more element to the end
 {
 	if ( n < 0 || n > Count() ) { return; }
 
 	cacheCs = -2;
 
-	//чтоб не сработал эффект cptr
+	//avoid effect of cptr
 	FSString s;
 	s.Copy( str );
 
@@ -114,7 +114,7 @@ void FSPath::MakeCache( int cs, unicode_t splitter )
 {
 	ASSERT( data.count() >= 0 );
 
-	if ( Count() == 1 && data[0].IsEmpty() ) // значит просто "/"
+	if ( Count() == 1 && data[0].IsEmpty() ) // then simple "/"
 	{
 		if ( cs == CS_UNICODE )
 		{
@@ -143,7 +143,7 @@ void FSPath::MakeCache( int cs, unicode_t splitter )
 			l += unicode_strlen( ( unicode_t* )data[i].Get( cs ) );
 		}
 
-		l += data.count() - 1; //разделители
+		l += data.count() - 1; //delimiters
 
 		if ( l < 0 ) { l = 0; }
 
@@ -172,7 +172,7 @@ void FSPath::MakeCache( int cs, unicode_t splitter )
 			l += strlen( ( char* )data[i].Get( cs ) );
 		}
 
-		l += data.count() - 1; //разделители
+		l += data.count() - 1; //delimiters
 
 		if ( l < 0 ) { l = 0; }
 
@@ -384,7 +384,7 @@ void cs_string::copy( const cs_string& a, int cs_id )
 				charset_struct* new_charset = charset_table[cs_id];
 
 				int len = new_charset->string_buffer_len( u, -1 );
-				m_Data = new_node( len + 1, cs_id ); //!!! параметры были переставлены :( фатально
+				m_Data = new_node( len + 1, cs_id );
 				new_charset->unicode_to_cs( m_Data->m_ByteBuffer.data(), u, -1, 0 );
 			}
 

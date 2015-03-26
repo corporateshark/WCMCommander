@@ -6,7 +6,7 @@
 
 #include "operwin.h"
 
-static Mutex operMutex; //блокировать при изменении operStopList, и при к threadId и tNode  в OperThreadWin !!!
+static Mutex operMutex; //lock while changing operStopList, and accessing threadId, tNode in OperThreadWin !!!
 
 static OperThreadNode* volatile operStopList = 0;
 
@@ -64,7 +64,7 @@ void OperThreadWin::StopThread()
 	if ( !this->cbExecuted ) //!!!
 	{
 		tNode->cbRet = -1;
-		tNode->cbCond.Signal(); // на всякий случай, вдруг сигнал о каллбаке послан, но сообщение еще до окна не дошло
+		tNode->cbCond.Signal(); // in case, if signal about callback is sent, but message is not get to the window yet
 	}
 
 	tNode->win = 0;
@@ -184,7 +184,7 @@ void OperThreadWin::ThreadSignal( int id, int data )
 	{
 		MutexLock lock( &operMutex );
 
-		if ( !tNode ) { return; } //уже остановлен и каллбаку послан согнал с отрицательным результатом
+		if ( !tNode ) { return; } //already stopped and signal with negative result was sent to callback
 
 		ASSERT( !cbExecuted );
 		cbExecuted = true;

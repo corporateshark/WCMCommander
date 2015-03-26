@@ -993,7 +993,7 @@ begin:
 
 									if ( *d == '*' || *d == '+' ) { count = *d; d++; }
 
-									//charsHash уничтожается после парсинга, поэтому надо создать другой набор
+									//charsHash destroyed after parsing, that's why we create another set
 									Chars* chars = AllocChars();
 									chars->Add( *p );
 
@@ -1010,7 +1010,7 @@ begin:
 
 									if ( *d == '*' || *d == '+' ) { count = *d; d++; }
 
-									rule->Add( RuleNode( c, true, count ) );                    //////// !!!!! (true) надо доделать
+									rule->Add( RuleNode( c, true, count ) );                    //////// !!!!! (true) need to rework (finish)
 								}
 						}
 

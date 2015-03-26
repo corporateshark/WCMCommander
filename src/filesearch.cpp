@@ -23,7 +23,7 @@ struct SearchItemNode
 	bool m_Added;
 	int dirId;
 	charset_struct* cs;
-	clPtr<FSNode> fsNode; //если пусто, то это просто директорий в котором лежат файлы следующие в списке за ним
+	clPtr<FSNode> fsNode; //if empty, then it's just a directory which contains files down the list after it
 
 	SearchItemNode( )
 		: m_Added( false ), dirId( -1 ), cs( 0 )
@@ -43,10 +43,10 @@ struct SearchDirNode: public iIntrusiveCounter
 };
 
 
-/* такими блоками передается информация о найденом из потока поиска
-   id каталого задается потоком поиска и уникальна для директория в одном процессе поиска
+/* this blocks contains info about found items from search thread
+   IDs of directories set by search thread and unique per thread
 
-   SearchItemNode поступают в список поиска в том же порядке, добавляясь в конец
+   SearchItemNode comes to the list in the same order by adding to the end
 */
 struct ThreadRetStruct: public iIntrusiveCounter
 {
@@ -66,7 +66,7 @@ struct ThreadRetStruct: public iIntrusiveCounter
 class OperSearchData: public OperData
 {
 public:
-	//после создания эти параметры может трогать толькл поток поиска
+	//after creation these params maybe touched by search thread only
 	SearchAndReplaceParams searchParams;
 	clPtr<FS> searchFs;
 	FSPath searchPath;
@@ -80,7 +80,7 @@ public:
 	FSPath currentPath;
 	// } (resMutex)
 
-	//поисковый поток может менять, основной поток может использовать только после завершения поискового потока
+	//search thread may change, main thread may use only after search thread ends
 	FSString errorString;
 
 	OperSearchData( NCDialogParent* p, SearchAndReplaceParams& sParams, clPtr<FS>& fs, FSPath& path, clPtr<MegaSearcher> searcher ):
@@ -832,7 +832,7 @@ void SearchFileThreadFunc( OperThreadNode* node )
 		{
 			lock.Lock(); //!!!
 
-			if ( !node->NBStopped() ) //обязательно надо проверить, иначе 'data' может быть неактуальной
+			if ( !node->NBStopped() ) //this check is needed because 'data' may be not valid
 			{
 				data->errorString = ex->message();
 			}
@@ -878,7 +878,7 @@ CoreCommands SearchFile(clPtr<FS> f, FSPath p, NCDialogParent* parent, FSPath* r
 
 	OperSearchData data( parent, searchParams, f, p, megaSearcher );
 	SearchFileThreadWin dlg( parent, carray_cat<char>( _LT( "Search:" ), utf8Mask.data() ).data(), &data );
-	dlg.RunNewThread( "Search file", SearchFileThreadFunc, &data ); //может быть исключение
+	dlg.RunNewThread( "Search file", SearchFileThreadFunc, &data ); //may throw exception
 	dlg.Enable();
 	dlg.Show();
 	int cmd = dlg.DoModal();

@@ -615,10 +615,10 @@ public:
 
 
 /*
-   все фанкции, возвращающие int возвращают 0 при успехе  -1 при ошибке и -2 при StopEvent
-   одна FS (один и тот же объект) может в один период времени мспользоваться только одним потоком
+   All methods, that returns int, return 0 when success, -1 when error, and -2 when StopEvent
+   one FS (the same object) is not thread-safe
 
-   id файла - int
+   id of file - int
 */
 
 
@@ -641,8 +641,8 @@ public:
 	virtual bool IsENOENT( int err )      = 0;
 	virtual bool IsEXDEV( int err )    = 0;
 	bool IsNORENAME( int err ) { return IsEXDEV( err ); };
-	virtual FSString StrError( int err )  = 0; //строка ощибки с указанным идентификатором
-	virtual bool Equal( FS* fs ) = 0; //должна отрабатывать null (как false)
+	virtual FSString StrError( int err )  = 0; //error string with specified identifier
+	virtual bool Equal( FS* fs ) = 0; //should process null (as false)
 
 	virtual int OpenRead ( FSPath& path, int flags, int* err, FSCInfo* info );
 	virtual int OpenCreate  ( FSPath& path, bool overwrite, int mode, int flags, int* err, FSCInfo* info );
@@ -806,7 +806,7 @@ public:
 #endif
 
 
-//path - должен быть абсолютным (если нет - то вернет false)
+//path - must be absolute (if not - return false)
 extern bool ParzeLink( FSPath& path, FSString& link );
 
 /// HH:MM:SS

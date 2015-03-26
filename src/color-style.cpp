@@ -6,7 +6,6 @@
 
 #include "color-style.h"
 
-//надо нормально разукрасить
 
 using namespace wal;
 /*

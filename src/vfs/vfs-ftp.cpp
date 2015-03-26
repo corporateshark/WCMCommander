@@ -201,7 +201,7 @@ void FTPNode::OpenData( const char* cmd )
 	{
 		s.Listen();
 
-		if ( !s.SelectRead( TIMEOUT_ACCEPT ) ) { throw int( -3 ); } //!!! надо посекундный цикл
+		if ( !s.SelectRead( TIMEOUT_ACCEPT ) ) { throw int( -3 ); } //!!! every seconds loop is needed
 
 		Sin sin;
 		s.Accept( data.Sock(), sin );
@@ -739,7 +739,7 @@ int FSFtp::Read   ( int fd, void* buf, int size, int* err, FSCInfo* info )
 		int n = p->pFtpNode->ReadData( buf, size );
 
 		{
-			// надо сделать проверку нет ли выполнения чего-либо уже с этим файлом
+			// need to add checking if there are operations on file
 		}
 
 		return n;
@@ -747,7 +747,7 @@ int FSFtp::Read   ( int fd, void* buf, int size, int* err, FSCInfo* info )
 	}
 	catch ( int e )
 	{
-		//busy fd здесь освобождать нельзя
+		//busy fd cannot free here
 		if ( err ) { *err = e; }
 
 		return ( e == -2 ) ? -2 : -1;
@@ -787,7 +787,7 @@ int FSFtp::Write  ( int fd, void* buf, int size, int* err, FSCInfo* info )
 		p->pFtpNode->WriteData( buf, size );
 
 		{
-			// надо сделать проверку нет ли выполнения чего-либо уже с этим файлом
+			// need to add checking if there are operations on file
 		}
 
 		return size;
@@ -795,7 +795,7 @@ int FSFtp::Write  ( int fd, void* buf, int size, int* err, FSCInfo* info )
 	}
 	catch ( int e )
 	{
-		//busy fd здесь освобождать нельзя
+		//busy fd cannot free here
 		if ( err ) { *err = e; }
 
 		return ( e == -2 ) ? -2 : -1;
@@ -840,7 +840,7 @@ int FSFtp::Rename ( FSPath&  oldpath, FSPath& newpath, int* err,  FSCInfo* info 
 int FSFtp::MkDir  ( FSPath& path, int mode, int* err,  FSCInfo* info )
 {
 	{
-		//проверка на существование
+		//checking for existence
 		FSStat st;
 		int r = Stat( path, &st, err, info );
 
@@ -928,7 +928,7 @@ int FSFtp::RmDir  ( FSPath& path, int* err, FSCInfo* info )
 		CStopSetter stopSetter( p->pFtpNode.ptr(), info );
 		FSPath par = path;
 		par.Pop();
-		p->pFtpNode->Cwd( ( char* )par.GetString( _param.charset, '/' ) ); //можно и в корень /
+		p->pFtpNode->Cwd( ( char* )par.GetString( _param.charset, '/' ) ); //can use root /
 		p->pFtpNode->RmDir( ( char* )path.GetString( _param.charset, '/' ) );
 		statCache.Del( path );
 	}
@@ -1310,7 +1310,7 @@ int FSFtp::ReadDir_int ( FSList* list, cstrhash<FSStat, char>* pSHash, FSPath& _
 		p->pFtpNode->Cwd( ( char* )path.GetString( _param.charset, '/' ) );
 		p->pFtpNode->Ls( ftp_list );
 
-		if ( list ) { list->Clear(); } //!!! исправлено (забыл проверить :( )
+		if ( list ) { list->Clear(); }
 
 		for ( int i = 0; i < ftp_list.count(); i++ )
 		{
@@ -1337,7 +1337,7 @@ int FSFtp::ReadDir_int ( FSList* list, cstrhash<FSStat, char>* pSHash, FSPath& _
 			FSStat st;
 			const char* fileName = "";
 
-			if ( strlen( w0 ) == 8 ) // думаем что - MS NN-NN-NN
+			if ( strlen( w0 ) == 8 ) // assume that - MS NN-NN-NN
 			{
 				char* w1 = ReadWord( s );
 				char* w2 = ReadWord( s );
@@ -1395,7 +1395,7 @@ int FSFtp::ReadDir_int ( FSList* list, cstrhash<FSStat, char>* pSHash, FSPath& _
 				fileName = s;
 			}
 
-			if ( !*fileName ) { continue; } //игнорируем пустые имена файлом (это какая-то добопнительная херня типа (total ...))
+			if ( !*fileName ) { continue; } //ignore empty file names
 
 			if ( pSHash )
 			{

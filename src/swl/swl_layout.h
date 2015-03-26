@@ -67,8 +67,8 @@ namespace wal
 		SpaceStruct(): growth( false ), size( 0 ) {};
 	};
 
-//структура для сбора списка окон, которым требуется изменение позиции или размера
-//чтоб потом оптом все изменить
+//struct for collecting windows list that needs positions or sizes adjustments
+//then do it all at once
 	struct WSS
 	{
 		Win* w;
@@ -77,7 +77,7 @@ namespace wal
 
 	struct LItem: public iIntrusiveCounter
 	{
-		//надо включить выравнивание
+		//need to turn on alignment
 		int r1, r2, c1, c2;
 		LItem( int _r1, int _r2, int _c1, int _c2 ): r1( _r1 ), r2( _r2 ), c1( _c1 ), c2( _c2 ) {}
 		virtual void GetLSize( LSize* ls ) = 0;

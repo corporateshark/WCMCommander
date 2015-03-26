@@ -30,7 +30,7 @@ namespace wal
 
 	enum CoreCommands
 	{
-		CMD_CHECK = 0, //команда проверки (поддерживается команда или нет) номер команды в этом случае передается в подкоманде
+		CMD_CHECK = 0, //checking command (check if command is supported) command number in this case is sent in subcommand
 		CMD_OK = 1,
 		CMD_CANCEL = 2,
 		CMD_YES = 3,
@@ -440,7 +440,7 @@ namespace wal
 
 #ifdef _WIN32
 		HFONT handle;
-		bool external; //true если внешний хэндл (чтоб не удалять в деструкторе)
+		bool external; //true if external handle (for skip deleting in destructor)
 		void drop() { if ( handle && !external ) { ::DeleteObject( handle ); } handle = 0;  }
 #else
 		enum { TYPE_X11 = 0, TYPE_FT = 1 };
@@ -677,7 +677,7 @@ namespace wal
 	};
 
 
-//создавать и копировать можно в любом потоке, а рисовать только в основном
+//create and copy can be in any thread, but painting only in main
 	class cicon: public iIntrusiveCounter
 	{
 		IconData* data;
@@ -759,7 +759,7 @@ namespace wal
 		bool textColorSet;
 		bool bkColorSet;
 
-		int bkMode; // -1 - неизвестно 0 - transparent 1 - OPAQUE
+		int bkMode; // -1 - unknown 0 - transparent 1 - OPAQUE
 		GC( HDC h, bool needDel );
 		void Restore();
 
@@ -989,8 +989,8 @@ namespace wal
 		wal::ccollect<Win*> childList;
 		WTYPE type;
 
-		WinID blockedBy; //Каким модальным окном заблокировано
-		void* modal; //если не 0 то окно в модальном состоянии
+		WinID blockedBy; //by which modal window is blocked by
+		void* modal; //if not 0 then window is in modal mode
 
 		unsigned whint;
 		unsigned state;
@@ -1006,7 +1006,7 @@ namespace wal
 		void ClearState( unsigned s ) { state &= ~s; }
 
 		bool IsOneParentWith( WinID h );
-		void PopupTreeList( ccollect<WinID>& list ); //добавляет в список текущее окно и его попапы
+		void PopupTreeList( ccollect<WinID>& list ); //adds to the list current window and it's popups
 
 		Win* FocusNPChild( bool next );
 
@@ -1156,11 +1156,11 @@ namespace wal
 
 		cfont* GetFont( int fontId = 0 ) { return parent ? parent->GetChildFont( this, fontId ) : SysGetFont( this, fontId ); }
 
-		//вызывается при изменении фонтов или каких то глобальных параметров, которые могут поменять пропорции окон
-		//в функции нужно пересчитать LSize
+		//called when fonts or other global params have changed, that can impact window proportions
+		//LSize have to be re-calculated inside the method
 		virtual void OnChangeStyles();
 
-		//вызывает у всех дочерних окон OnChangeStyles и RecalcLayouts
+		//calls OnChangeStyles and RecalcLayouts in all child windows
 		static void StylesChanged( Win* w );
 
 #ifndef _WIN32

@@ -210,7 +210,7 @@ namespace wal
 			return 0;
 		}
 
-//нада, все-таки, нормально юникод применить
+//should use unicode
 		switch ( c )
 		{
 			case '!':

@@ -25,7 +25,7 @@ namespace wal
 		{
 			if ( !ev )
 			{
-				fprintf( stderr, "can`t create internal pipe (WthInternalEvent)\n" );
+				fprintf( stderr, "can't create internal pipe (WthInternalEvent)\n" );
 				exit( 1 );
 			}
 		};
@@ -50,7 +50,7 @@ namespace wal
 		{
 			if ( pipe( const_cast<int*>( fd ) ) )
 			{
-				fprintf( stderr, "can`t create internal pipe (WthInternalEvent)\n" );
+				fprintf( stderr, "can't create internal pipe (WthInternalEvent)\n" );
 				exit( 1 );
 			}
 		};

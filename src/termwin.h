@@ -70,7 +70,7 @@ class TerminalWin : public Win
 
 	Layout _lo;
 	ScrollBar _scroll;
-	TScreen screen; //это ТОЛЬКО видимая область экрана
+	TScreen screen; //this is ONLY visible area of the screen
 	int cH;
 	int cW;
 	crect _rect;
