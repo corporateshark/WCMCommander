@@ -57,7 +57,7 @@ void* ShellLoadDirThreadFunc( void* ptr )
 	{
 		MutexLock lock( &data->mutex );
 
-		try { data->err = "BOTVA: unhabdled exception: void *VSThreadFunc(void *ptr) "; }
+		try { data->err = "Unhabdled exception: void *VSThreadFunc(void *ptr) "; }
 		catch ( cexception* x ) { x->destroy(); }
 	}
 

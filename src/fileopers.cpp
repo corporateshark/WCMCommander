@@ -487,7 +487,7 @@ void MkDirThreadFunc( OperThreadNode* node )
 		{
 			lock.Lock(); //!!!
 
-			if ( !node->NBStopped() ) //обязательно надо проверить, иначе 'data' может быть неактуальной
+			if ( !node->NBStopped() ) //this check is needed because 'data' may be not valid
 			{
 				data->errorString = ex->message();
 			}
@@ -512,7 +512,7 @@ bool MkDir( clPtr<FS> f, FSPath& p, NCDialogParent* parent )
 	dlg.threadData.Clear();
 	dlg.threadData.srcFs = f;
 	dlg.threadData.srcPath = p;
-	dlg.RunNewThread( "Create directory", MkDirThreadFunc, &dlg.threadData ); //может быть исключение
+	dlg.RunNewThread( "Create directory", MkDirThreadFunc, &dlg.threadData ); //may throw exception
 	dlg.Enable();
 	dlg.Show();
 	dlg.DoModal();
@@ -523,7 +523,7 @@ bool MkDir( clPtr<FS> f, FSPath& p, NCDialogParent* parent )
 
 ///////////////////////////////////////////////////// DELETE
 
-//возвращает true если можно продолжать процесс
+//returns true if the process can be procceeded
 
 bool OperCFThread::Unlink( FS* fs, FSPath& path, bool* skipAll )
 {
@@ -533,7 +533,7 @@ bool OperCFThread::Unlink( FS* fs, FSPath& path, bool* skipAll )
 	{
 		if ( skipAll && *skipAll ) { return true; }
 
-		switch ( RedMessage( _LT( "Can`t delete file:\n" ), fs->Uri( path ).GetUtf8(), skipAll ? bRetrySkipSkipallCancel : bRetrySkipCancel,
+		switch ( RedMessage( _LT( "Can't delete file:\n" ), fs->Uri( path ).GetUtf8(), skipAll ? bRetrySkipSkipallCancel : bRetrySkipCancel,
 		                     fs->StrError( ret_err ).GetUtf8() ) )
 		{
 			case CMD_SKIPALL:
@@ -695,7 +695,7 @@ void DeleteThreadFunc( OperThreadNode* node )
 		{
 			lock.Lock(); //!!!
 
-			if ( !node->NBStopped() ) //обязательно надо проверить, иначе 'data' может быть неактуальной
+			if ( !node->NBStopped() ) //this check is needed because 'data' may be not valid
 			{
 				data->errorString = ex->message();
 			}
@@ -721,7 +721,7 @@ bool DeleteList( clPtr<FS> f, FSPath& p, clPtr<FSList> list, NCDialogParent* par
 	dlg.threadData.srcFs = f;
 	dlg.threadData.srcPath = p;
 	dlg.threadData.srcList = list;
-	dlg.RunNewThread( "Delete", DeleteThreadFunc, &dlg.threadData ); //может быть исключение
+	dlg.RunNewThread( "Delete", DeleteThreadFunc, &dlg.threadData ); //may throw exception
 	dlg.Enable();
 	dlg.Show();
 	dlg.DoModal();
@@ -1486,7 +1486,7 @@ bool OperCFThread::CopyDir( FS* srcFs, FSPath& __srcPath, FSNode* srcNode, FS* d
 
 		if ( !ret ) { break; }
 
-		switch ( RedMessage( _LT( "Can`t open directory:\n" ) , srcFs->Uri( __srcPath ).GetUtf8(), bRetrySkipCancel, srcFs->StrError( ret_error ).GetUtf8() ) )
+		switch ( RedMessage( _LT( "Can't open directory:\n" ) , srcFs->Uri( __srcPath ).GetUtf8(), bRetrySkipCancel, srcFs->StrError( ret_error ).GetUtf8() ) )
 		{
 			case CMD_SKIP:
 				return true;
@@ -1672,7 +1672,7 @@ void CopyThreadFunc( OperThreadNode* node )
 		{
 			lock.Lock(); //!!!
 
-			if ( !node->NBStopped() ) //обязательно надо проверить, иначе 'data' может быть неактуальной
+			if ( !node->NBStopped() ) //this check is needed because 'data' may be not valid
 			{
 				data->errorString = ex->message();
 			}
@@ -1702,7 +1702,7 @@ clPtr<cstrhash<bool, unicode_t> > CopyFiles( clPtr<FS> srcFs, FSPath& srcPath, c
 	dlg.threadData.destFs = destFs;
 	dlg.threadData.destPath = destPath;
 
-	dlg.RunNewThread( "Copy", CopyThreadFunc, &dlg.threadData ); //может быть исключение
+	dlg.RunNewThread( "Copy", CopyThreadFunc, &dlg.threadData ); //may throw exception
 	dlg.Enable();
 	dlg.Show();
 	dlg.DoModal();
@@ -1923,7 +1923,7 @@ bool OperCFThread::Move( FS* srcFs, FSPath& __srcPath, FSList* list, FS* destFs,
 	if ( list->Count() > 1 )
 	{
 
-		//если файлов >1 то копировать можно только в каталог
+		// if more than one file, then can only copy in to a catalog
 		if ( r )
 		{
 			RedMessage( _LT( "Can't move files, bad destination directory:\n" ), destFs->Uri( __destPath ).GetUtf8(), bOk, destFs->StrError( ret_error ).GetUtf8() );
@@ -1999,7 +1999,7 @@ void MoveThreadFunc( OperThreadNode* node )
 		{
 			lock.Lock(); //!!!
 
-			if ( !node->NBStopped() ) //обязательно надо проверить, иначе 'data' может быть неактуальной
+			if ( !node->NBStopped() ) //this check is needed because 'data' may be not valid
 			{
 				data->errorString = ex->message();
 			}
@@ -2030,7 +2030,7 @@ bool MoveFiles( clPtr<FS> srcFs, FSPath& srcPath, clPtr<FSList> list, clPtr<FS> 
 	dlg.threadData.destPath = destPath;
 
 
-	dlg.RunNewThread( "Move", MoveThreadFunc, &dlg.threadData ); //может быть исключение
+	dlg.RunNewThread( "Move", MoveThreadFunc, &dlg.threadData ); //may throw exception
 	dlg.Enable();
 	dlg.Show();
 	dlg.DoModal();

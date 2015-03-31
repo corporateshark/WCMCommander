@@ -471,7 +471,7 @@ void SaveStringList( const char* section, std::vector< std::string >& list )
 
 
 #else
-//старый клочек, надо перепроверить
+
 static const char* regapp = "WCM commander";
 static const char* regcomp = "WCM";
 
@@ -1594,18 +1594,18 @@ void InitConfigPath()
 
 		if ( fs.Stat( path, &st, &err, 0 ) )
 		{
-			if ( fs.IsENOENT( err ) ) //директорий не существует
+			if ( fs.IsENOENT( err ) ) //directory not exists
 			{
 				if ( fs.MkDir( path, 0700, &err,  0 ) )
 				{
-					fprintf( stderr, "can`t create config directory %s (%s)", path.GetUtf8(), fs.StrError( err ).GetUtf8() );
+					fprintf( stderr, "can't create config directory %s (%s)", path.GetUtf8(), fs.StrError( err ).GetUtf8() );
 					return;
 				}
 
 			}
 			else
 			{
-				fprintf( stderr, "can`t create config directory statuc %s (%s)", path.GetUtf8(), fs.StrError( err ).GetUtf8() );
+				fprintf( stderr, "can't create config directory statuc %s (%s)", path.GetUtf8(), fs.StrError( err ).GetUtf8() );
 				return;
 			}
 		}

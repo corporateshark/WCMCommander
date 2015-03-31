@@ -153,7 +153,7 @@ namespace wal
 
 		if ( WaitForSingleObject( th->handle, INFINITE ) != WAIT_OBJECT_0 )
 		{
-			return -1;   //неясно что делать с p
+			return -1;
 		}
 
 		if ( val ) { *val = th->ret; }

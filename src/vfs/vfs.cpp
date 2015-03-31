@@ -69,7 +69,6 @@ static void TT_to_FILETIME( time_t t, FILETIME& ft )
 	ft.dwHighDateTime = ( DWORD )(( ll >> 32 ) & 0xFFFFFFFF );
 }
 
-//!!! Херня какая-то в преобразовании, надо разбираться
 static time_t FILETIME_to_TT( FILETIME ft )
 {
 	LONGLONG ll =  ft.dwHighDateTime;
@@ -149,29 +148,9 @@ bool FSSys::Equal( FS* fs )
 	return true;
 }
 
-/* не поддерживает пути >265 длиной
-static std::vector<wchar_t> SysPathStr(int drive, const unicode_t *s)
-{
-   std::vector<wchar_t> p(2 + unicode_strlen(s)+1);
-   wchar_t *d =p.ptr();
-
-   if (drive == -1) { //???
-      *(d++) = '\\';
-   } else {
-      d[0]=drive+'a';
-      d[1]=':';
-      d+=2;
-   }
-
-   for (; *s; s++, d++) *d = *s;
-   *d=0;
-   return p;
-}
-*/
-
 static std::vector<wchar_t> SysPathStr( int drive, const unicode_t* s )
 {
-	std::vector<wchar_t> p( 10 + unicode_strlen( s ) + 1 ); //+10 прозапас, вообще +8 (макс \\?\UNC\)
+	std::vector<wchar_t> p( 10 + unicode_strlen( s ) + 1 ); //+10 just in case, really +8 (max \\?\UNC\)
 	wchar_t* d = p.data();
 
 	d[0] = '\\';
@@ -185,7 +164,7 @@ static std::vector<wchar_t> SysPathStr( int drive, const unicode_t* s )
 		d[0] = 'U';
 		d[1] = 'N';
 		d[2] = 'C';
-		//d[3]='\\'; //еше \ добавится из пути
+		//d[3]='\\'; //plus \ will be added from the path
 		d += 3;
 	}
 	else
@@ -369,7 +348,7 @@ int FSSys::Delete( FSPath& path, int* err, FSCInfo* info )
 
 	DWORD lastError  = GetLastError();
 
-	if ( lastError == ERROR_ACCESS_DENIED ) //возможно read only аттрибут, пытаемся сбросить
+	if ( lastError == ERROR_ACCESS_DENIED ) //maybe read only attribute, try to reset
 	{
 		if ( SetFileAttributesW( sp.data(), 0 ) && DeleteFileW( sp.data() ) ) { return 0; }
 
@@ -388,7 +367,7 @@ int FSSys::RmDir( FSPath& path, int* err, FSCInfo* info )
 
 	DWORD lastError  = GetLastError();
 
-	if ( lastError == ERROR_ACCESS_DENIED ) //возможно read only аттрибут, пытаемся сбросить
+	if ( lastError == ERROR_ACCESS_DENIED ) //maybe read only attribute, try to reset
 	{
 		if ( SetFileAttributesW( sp.data(), 0 ) && RemoveDirectoryW( sp.data() ) ) { return 0; }
 
@@ -423,28 +402,6 @@ int FSSys::SetFileTime  ( FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime
 	CloseHandle( h );
 	return 0;
 }
-/* не поддерживает пути >265 длиной
-static std::vector<wchar_t> FindPathStr(int drive, const unicode_t *s, wchar_t *cat)
-{
-   int lcat = Utf16Chars(cat);
-
-   std::vector<wchar_t> p(2 + unicode_strlen(s)+lcat+1);
-   wchar_t *d =p.ptr();
-
-   if (drive == -1) {
-      *(d++) = '\\';
-   } else {
-      d[0]=drive+'a';
-      d[1]=':';
-      d+=2;
-   }
-
-   for (; *s; s++, d++) *d = *s;
-   for (;*cat;cat++, d++) *d=*cat;
-   *d=0;
-   return p;
-}
-*/
 
 // make UNC path by concati'ing input pars in an intelligent way
 static std::vector<wchar_t> FindPathStr( int drive, const unicode_t* s, const wchar_t* cat )
@@ -465,7 +422,7 @@ static std::vector<wchar_t> FindPathStr( int drive, const unicode_t* s, const wc
 		d[0] = 'U';
 		d[1] = 'N';
 		d[2] = 'C';
-		//d[3]='\\'; //еше \ добавится из пути
+		//d[3]='\\'; //plus \ will be added from the path
 		d += 3;
 	}
 	else
@@ -1032,7 +989,7 @@ int FSWin32Net::ReadDir ( FSList* list, FSPath& path, int* err, FSCInfo* info )
 
 			if ( p->dwDisplayType == RESOURCEDISPLAYTYPE_SHARE || p->dwDisplayType == RESOURCEDISPLAYTYPE_SERVER )
 			{
-				//выкинуть из названия шары имя сервера, а из названия сервера - косые символы
+				//remove server name from shared resource name and wrong simbols from server name
 				wchar_t* last = 0;
 
 				for ( wchar_t* s = pName; *s; s++ )
@@ -2284,7 +2241,7 @@ bool ParzeLink( FSPath& path, FSString& link )
 {
 	FSPath t( link );
 
-	if ( !path.IsAbsolute() && !t.IsAbsolute() ) { return false; } //не абсолютный путь
+	if ( !path.IsAbsolute() && !t.IsAbsolute() ) { return false; } //not absolute path
 
 	int first = 0;
 

@@ -896,7 +896,7 @@ void clSelectDriveDlgMenu::SetCurrent( int n, bool searchUp )
 int clSelectDriveDlgMenu::UiGetClassId()
 {
 	return uiClassButton/*DlgMenu*/;
-} //чтоб диалог его востринимал как кнопку
+} //for dialog accepts it as a button
 
 
 bool clSelectDriveDlgMenu::EventShow( bool show )

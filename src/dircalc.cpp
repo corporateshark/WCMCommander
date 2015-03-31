@@ -11,7 +11,7 @@
 class OperDirCalcData: public OperData
 {
 public:
-	//после создания эти параметры может трогать толькл поток поиска
+	//after creation these params are touched by search thread only
 	clPtr<FS> dirFs;
 	FSPath _path;
 	clPtr<FSList> dirList;
@@ -25,7 +25,7 @@ public:
 	FSPath currentPath;
 	// } (resMutex)
 
-	//поисковый поток может менять, основной поток может использовать только после завершения поискового потока
+	//search thread may update, main thread may read after search thread ends only
 	FSString errorString;
 
 	OperDirCalcData( NCDialogParent* p, clPtr<FS>& fs, FSPath& path, clPtr<FSList> list ):
@@ -441,7 +441,7 @@ void DirCalcThreadFunc( OperThreadNode* node )
 		{
 			lock.Lock(); //!!!
 
-			if ( !node->NBStopped() ) //обязательно надо проверить, иначе 'data' может быть неактуальной
+			if ( !node->NBStopped() ) //this check is needed because 'data' may be not valid
 			{
 				data->errorString = ex->message();
 			}
@@ -467,7 +467,7 @@ bool DirCalc( clPtr<FS> f, FSPath& path, clPtr<FSList> list, NCDialogParent* par
 	OperDirCalcData data(parent, f, path, list);
 	DirCalcThreadWin dlg(parent, doCurrentDir ? _LT("Current folder metrics") : _LT("Selected folder(s) metrics"), &data, f->Uri(path).GetUnicode());
 
-	dlg.RunNewThread( "Folder calc", DirCalcThreadFunc, &data ); //может быть исключение
+	dlg.RunNewThread( "Folder calc", DirCalcThreadFunc, &data ); //may throw exception
 
 	dlg.Enable();
 	dlg.Show();

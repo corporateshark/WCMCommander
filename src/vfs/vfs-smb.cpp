@@ -170,13 +170,13 @@ static void InitSmb()
 
 	smbCTX = smbc_new_context();
 
-	if ( !smbCTX ) { throw_syserr( 0, "smbclient can`t allocate context" ); }
+	if ( !smbCTX ) { throw_syserr( 0, "smbclient can't allocate context" ); }
 
 	if ( !smbc_init_context( smbCTX ) )
 	{
 		smbc_free_context( smbCTX, 0 );
 		smbCTX = 0;
-		throw_syserr( 0, "smbclient can`t init context" );
+		throw_syserr( 0, "smbclient can't init context" );
 	}
 
 	smbc_set_context( smbCTX );
@@ -353,7 +353,7 @@ int FSSmb::SetFileTime( FSPath& path, FSTime cTime, FSTime aTime, FSTime mTime, 
 	return n < 0 ? -1 : n;
 }
 
-//от глюков
+
 struct big_stat
 {
 	struct stat st;
@@ -478,7 +478,7 @@ int FSSmb::StatVfs( FSPath& path, FSStatVfs* vst, int* err, FSCInfo* info )
 	   return -1;
 	}
 
-	////////////// работает, но при первом вызове выдает "no talloc stackframe around, leaking memory", ХЗ
+	////////////// works, but when first called returns "no talloc stackframe around, leaking memory"
 	if (!st.f_frsize) st.f_frsize = st.f_bsize;
 
 	vst->size = int64_t(st.f_blocks) * st.f_frsize;

@@ -73,6 +73,8 @@ namespace wal
 		std::vector<unicode_t> unicodeBuf( symbolCount + 1 );
 		sys_to_unicode( unicodeBuf.data(), s );
 		int utf8Len = utf8_string_buffer_len( unicodeBuf.data(), symbolCount );
+		
+		//TODO: memory leak ?!!!
 		char* Buf = (char*)alloca( utf8Len + 1 );
 		unicode_to_utf8( Buf, unicodeBuf.data(), symbolCount );
 		return std::string( Buf );

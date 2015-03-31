@@ -101,7 +101,7 @@ public:
 	bool SetCase( bool yes ) { if ( caseSensitive == yes ) { return false; } caseSensitive = yes; MakeList(); Sort(); return true; }
 
 
-	FSNode* Get( int n, bool RootDir ) const //от n отнимается 1
+	FSNode* Get( int n, bool RootDir ) const //n is subtracted by 1
 	{
 		if ( RootDir )
 		{
@@ -111,7 +111,7 @@ public:
 		return ( n > 0 && n <= listCount ) ? list[n - 1] : 0;
 	}
 
-	const unicode_t* GetFileName( int n, bool RootDir ) //от n отнимается 1
+	const unicode_t* GetFileName( int n, bool RootDir ) //n is subtracted by 1
 	{
 		if ( RootDir )
 		{
@@ -225,7 +225,7 @@ public:
 		return plist;
 	}
 
-	void InvertSelection( int n, bool RootDir ) //от n отнимается 1
+	void InvertSelection( int n, bool RootDir ) //n is subtracted by 1
 	{
 		FSNode* p = NULL;
 

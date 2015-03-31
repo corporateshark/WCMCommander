@@ -96,7 +96,7 @@ namespace wal
 		return w->Event( &ev );
 	}
 
-	void CheckMousePosition()  //надо запускать периодически (2 раза в секунду)
+	void CheckMousePosition()  //needs to be run periodically (2 times a second)
 	{
 		if ( mouseWindow )
 		{
@@ -168,7 +168,7 @@ namespace wal
 	}
 
 
-// надо с исключениями порешать
+// needs to revise exceptions
 	LRESULT CALLBACK WProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
 	{
 		try
@@ -189,8 +189,8 @@ namespace wal
 				case WM_NCACTIVATE:
 //	break;
 				{
-					// Все для того, чтоб при активации и деактивации дерева попапов
-					// рамки всего дерева были либо активными либо нет одновременно
+					// this is done for activation and deactivation of popups tree
+					// borders of all tree should be active or inactive
 					if ( !win ) { break; }
 
 					if ( win->IsOneParentWith( ( HWND )lParam ) ) { return TRUE; }
@@ -912,7 +912,7 @@ namespace wal
 	{
 		wth_DropWindow( this );
 
-		if ( modal ) // ???? может и не надо
+		if ( modal ) // ???? does this needed?
 		{
 			( ( ModalStruct* )modal )->EndModal( 0 );
 		}
@@ -1550,7 +1550,7 @@ namespace wal
 
 	void Win32CompatibleBitmap::Set( Image32& image )
 	{
-///!!! надо сделать по нормальному, а не через SetPixel !!!
+///!!! should be done right, not by using SetPixel !!!
 		clear();
 		int w = image.width();
 		int h = image.height();

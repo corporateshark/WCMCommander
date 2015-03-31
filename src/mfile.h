@@ -6,7 +6,7 @@
 
 #pragma once
 
-//для загрузки и выгрузки данныз редактора
+//for loading and saving editor's data
 
 class MemFile: public iIntrusiveCounter
 {

@@ -165,7 +165,7 @@ namespace wal
 		int Read( void* buf, int size );
 		int Write( void* buf, int size );
 		seek_t Seek( seek_t distance, SEEK_FILE_MODE method = FSEEK_BEGIN );
-		~File(); //закрывает без эксепшенов (лучше сначала вызывать Close)
+		~File(); //closes without exceptions (better to call Close first)
 	};
 
 	class BFile

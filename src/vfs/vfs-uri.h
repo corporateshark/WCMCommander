@@ -11,13 +11,13 @@
 #include "vfs.h"
 
 /*
-   если uri - относительный, то считается путь относительно  path, и берется первый FS из списка
-      если FS нет, то это ошибка и возвращается пустой clPtr<FS>
+   if uri - relative, then path is taken relative to path, and taken first FS from list
+      if no FS, then this is error and returns empty clPtr<FS>
 
-   path всегда должен быть абсолютным
+   path always must be absolute
 
-   возврат: clPtr<FS> и измененный path
-      в случае ошибки: clPtr<FS> пустой, path - не определен
+   returns: clPtr<FS> and changed path
+      in case of error: clPtr<FS> empty, path - undefined
 */
 
 clPtr<FS> ParzeURI( const unicode_t* uri, FSPath& path, const std::vector<clPtr<FS>>& checkFS );

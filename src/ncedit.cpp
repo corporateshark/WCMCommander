@@ -63,7 +63,7 @@ void EditWin::OnChangeStyles()
 
 	if ( !charH ) { charH = 10; }
 
-//как в EventSize !!!
+//like in EventSize !!!
 	rows = editRect.Height() / charH;
 	cols = editRect.Width() / charW;
 
@@ -883,7 +883,7 @@ bool EditWin::DelMarked() //!Undo
 			for ( int i = 0; i < delCount; i++ )
 			{
 				EditString& line = text.Get( begin.line + i + 1 );
-				undoBlock->DelLine( begin.line + 1 /*!!! без i*/, line.flags, line.Get(), line.Len() );
+				undoBlock->DelLine( begin.line + 1 /*!!! without i*/, line.flags, line.Get(), line.Len() );
 			}
 
 			text.Delete( begin.line + 1, delCount );
@@ -1267,7 +1267,7 @@ void EditWin::Backspace( bool DeleteWord ) //!Undo
 				int l = str_1.len;
 
 
-				undoBlock->InsText( cursor.line - 1, str_1.len, str.Get(), str.Len() ); //пока не поменялся str_1.len
+				undoBlock->InsText( cursor.line - 1, str_1.len, str.Get(), str.Len() ); //while unchanged str_1.len
 				str_1.Insert( str.Get(), str_1.len, str.len );
 
 				undoBlock->Attr( cursor.line - 1, str_1.flags, str.flags );
@@ -1688,7 +1688,7 @@ void EditWin::EnableShl( bool on )
 		_shlConf->Parze( ( sys_char_t* ) UNIX_CONFIG_DIR_PATH "/shl/config.cfg" );
 #endif
 		_shlLine = -1;
-		//надо сделать не utf8 а текущий cs
+		//need to make not utf8 but current cs
 		_shl = _shlConf->Get( _path.GetUnicode() , utf8_to_unicode( firstLine.data() ).data(), colors );
 	}
 
@@ -1955,7 +1955,7 @@ void EditWin::__DrawChanges()
 	}
 
 
-//перерисовать курсор всегда //  if (screen.prevCursor != screen.cursor)
+//redraw cursor always //  if (screen.prevCursor != screen.cursor)
 	DrawCursor( gc );
 }
 

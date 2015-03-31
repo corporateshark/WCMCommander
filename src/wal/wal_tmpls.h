@@ -264,19 +264,19 @@ namespace wal
 	   LT
 	   const KT& key()
 	   unsigned intKey()
-	   член LT *next
-	   конструктор копирования
+	   member LT *next
+	   copy constructor
 
-	   KT - тип ключа
-	   должен иметь operator unsigned()
-	   должен сравниваться на ==
+	   KT - key type
+	   must have operator unsigned()
+	   should implement ==
 
 	   IC - true
-	   если сначала сравнивать intKey(), а затем key()
-	   иначе только key()
+	   if compare first intKey(), and then key()
+	   otherwise only key()
 
-	   (если KT целочисленный и равен intKey() то сравнивать 2 раза незачем
-	   (спорный момент))
+	   (if KT is integer and equals intKey() then no need to compare two times
+		(not sure))
 	*/
 
 
@@ -332,14 +332,14 @@ namespace wal
 				if ( IC )
 				{
 					if ( intKey == p->intKey() &&
-					     p->key() == key ) //порядок операндов в == важен
+					     p->key() == key ) //operands order in == is important
 					{
 						return p;
 					}
 				}
 				else
 				{
-					if ( p->key() == key ) //порядок операндов в == важен
+					if ( p->key() == key ) //operands order in == is important
 					{
 						return p;
 					}
@@ -395,8 +395,8 @@ namespace wal
 
 		for ( p = table.data() + n; *p; p = &( p[0]->next ) )
 
-			//порядок операндов сравнений важен
-			//чтобы определять только встроенный оператор == в KT
+			//operands order in == is important
+			//for defining only embeded operator == in KT
 			if ( IC )
 			{
 				if ( p[0]->intKey() == intKey &&  p[0]->key() == key )

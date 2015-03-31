@@ -68,7 +68,7 @@ protected:
 	int GetFocusButtonNum();
 public:
 	NCDialog( bool child, int nId, NCDialogParent* parent, const unicode_t* headerText, ButtonDataNode* blist );
-	void MaximizeIfChild( bool x = true, bool y = true ); //чтоб делать большие дочерние диалоги (типа поиска файлов и тд)
+	void MaximizeIfChild( bool x = true, bool y = true ); //for making big child dialogs (like File Search)
 	void SetPosition();
 	void AddWin( Win* w ) { _lo.AddWin( w, 4, 4 ); }
 	void AddLayout( Layout* l ) { _lo.AddLayout( l, 4, 4 ); }

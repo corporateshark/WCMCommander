@@ -139,7 +139,7 @@ void LoadFileThreadFunc( OperThreadNode* node )
 		{
 			lock.Lock(); //!!!
 
-			if ( !node->NBStopped() ) //обязательно надо проверить, иначе 'data' может быть неактуальной
+			if ( !node->NBStopped() ) //this check is needed because 'data' may be not valid
 			{
 				data->errorString = ex->message();
 			}
@@ -187,7 +187,7 @@ void LoadThreadWin::OperThreadStopped()
 
 	file = threadData.file;
 
-	if ( !file.ptr() ) //бывает при  _ignoreENOENT, создаем пустой
+	if ( !file.ptr() ) //may be when _ignoreENOENT, create empty
 	{
 		file = new MemFile;
 	}
@@ -202,7 +202,7 @@ clPtr<MemFile> LoadFile( clPtr<FS> f, FSPath& p, NCDialogParent* parent, bool ig
 {
 	LoadThreadWin dlg( parent, ignoreENOENT );
 	dlg.threadData.SetNewParams( f, p );
-	dlg.RunNewThread( "Load editor file", LoadFileThreadFunc, &dlg.threadData ); //может быть исключение
+	dlg.RunNewThread( "Load editor file", LoadFileThreadFunc, &dlg.threadData ); //may throw exception
 	dlg.DoModal();
 	dlg.StopThread();
 	return dlg.file;
@@ -298,7 +298,7 @@ void OperSaveFileThread::Run()
 
 			if ( n < 0 )
 			{
-				throw_msg( "Can`t save file\n%s", fs->StrError( ret_error ).GetUtf8() );
+				throw_msg( "Can't save file\n%s", fs->StrError( ret_error ).GetUtf8() );
 			}
 
 			if ( n != count )
@@ -309,7 +309,7 @@ void OperSaveFileThread::Run()
 
 		if ( fs->Close( f, &ret_error, Info() ) )
 		{
-			throw_msg( "Can`t save file\n%s", fs->StrError( ret_error ).GetUtf8() );
+			throw_msg( "Can't save file\n%s", fs->StrError( ret_error ).GetUtf8() );
 		}
 	}
 	catch ( ... )
@@ -348,7 +348,7 @@ void SaveFileThreadFunc( OperThreadNode* node )
 		{
 			lock.Lock(); //!!!
 
-			if ( !node->NBStopped() ) //обязательно надо проверить, иначе 'data' может быть неактуальной
+			if ( !node->NBStopped() ) //this check is needed because 'data' may be not valid
 			{
 				data->errorString = ex->message();
 			}
@@ -398,7 +398,7 @@ bool SaveFile( clPtr<FS> f, FSPath& p, clPtr<MemFile> file, NCDialogParent* pare
 {
 	SaveThreadWin dlg( parent );
 	dlg.threadData.SetNewParams( f, p, file );
-	dlg.RunNewThread( "Save editor file", SaveFileThreadFunc, &dlg.threadData ); //может быть исключение
+	dlg.RunNewThread( "Save editor file", SaveFileThreadFunc, &dlg.threadData ); //may throw exception
 	dlg.Enable();
 	dlg.Show();
 	dlg.DoModal();

@@ -9,7 +9,7 @@
 #include "vfs-sftp.h"
 
 
-#include "operthread.h" //для carray_cat, надо переделать по нормальному
+#include "operthread.h" //for carray_cat, needs to be reworked
 
 #include <libssh/callbacks.h>
 
@@ -130,7 +130,7 @@ int FSSftp::CheckSession( int* err, FSCInfo* info )
 			}
 		};
 
-		if ( ssh_options_set( sshSession, SSH_OPTIONS_USER, ( char* )userName.Get( _operParam.charset ) ) ) //есть сомнения, что надо все таки в utf8
+		if ( ssh_options_set( sshSession, SSH_OPTIONS_USER, ( char* )userName.Get( _operParam.charset ) ) ) //not sure if utf8 is needed
 		{
 			throw int( SSH_INTERROR_X3 );
 		}
@@ -415,8 +415,8 @@ int FSSftp::OpenCreate  ( FSPath& path, bool overwrite, int mode, int* err, FSCI
 	if ( !overwrite )
 	{
 		/*
-		   заебался выяснять почему sftp_open  с  O_EXCL выдает "generc error" при наличии файла, а не EEXIST какой нибудь
-		   поэтому встанил эту дурацкую проверку на наличие
+		   it was strange that sftp_open with O_EXCL returns "generc error" when files exists, instead of EEXIST
+			then added this stupid check for existence
 		*/
 		sftp_attributes a = sftp_lstat( sftpSession, ( char* ) path.GetString( _operParam.charset, '/' ) );
 
@@ -505,7 +505,7 @@ int FSSftp::Read  ( int fd, void* buf, int size, int* err, FSCInfo* info )
 
 
 	/*
-	   на всякий случай как в Write, а то хз
+	   just in case as in Write
 	*/
 	int bytes = 0;
 	char* s = ( char* )buf;
@@ -568,12 +568,11 @@ int FSSftp::Write ( int fd, void* buf, int size, int* err, FSCInfo* info )
 
 
 	/*
-	   Бля, libssh похоже какие-то уроды пишут
-	   при size 65536 портит данные, если 16к то нормально, пришлось уменьшить,
-	   а вот читать такие блоки - читает.
-	   хотя надо и там уменьшить, кто этих пидоров знает
+	   libssh corrupts data when size is 65536, but if 16k then OK, so have to decrease
+		but reads such blocks successfully
+		(needs to be decreased there also, just in case)
 
-	   а было - так
+	   this is how it was
 	   int bytes = sftp_write(fileTable[fd], buf, size);
 	*/
 

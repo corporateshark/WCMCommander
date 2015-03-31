@@ -20,7 +20,7 @@ enum FTP_ERRNO
 	EFTP_EXIST = -15
 };
 
-//++volatile надо скорректировать
+//++volatile need to be corrected
 class FtpStatCache
 {
 	enum CONSTS { CACHE_TIMEOUT = 60 };
@@ -47,7 +47,7 @@ private:
 	void operator = ( const FtpStatCache& ) {};
 };
 
-//++volatile надо скорректировать
+//++volatile need to be corrected
 class FTPNode: public iIntrusiveCounter
 {
 	TCPSyncBufProto ctrl;
@@ -114,7 +114,7 @@ public:
 	~FtpIDCollection() {}
 };
 
-//++volatile надо скорректировать
+//++volatile need to be corrected
 class FSFtp : public FS
 {
 	mutable Mutex infoMutex;

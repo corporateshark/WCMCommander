@@ -37,9 +37,9 @@ inline void UpStr( char* s )
 }
 
 
-//синтаксис var = [val]; ..
+//syntax var = [val]; ..
 //var - [_0-9a-zA-Z]+
-//val - "..." или '..' или слово без пробелов и ; ,  \ -экран
+//val - "..." or '..' or word without spaces and ; ,  \ - escape
 
 bool StrConfig::Load( const char* s )
 {

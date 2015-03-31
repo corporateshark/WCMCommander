@@ -552,10 +552,7 @@ NCWin::NCWin()
 	_mdRight.AddSub( _LT( "&Sort mode" ), &_mdRightSort );
 	_mdRight.AddCmd( ID_DEV_SELECT_RIGHT, _LT( "Change &drive" ), "Shift-F2" );
 
-//#ifndef _WIN32 //пока там только 1 параметр для unix
-//теперь 2
 	_mdOptions.AddCmd( ID_CONFIG_SYSTEM, _LT( "S&ystem settings" ) );
-//#endif
 	_mdOptions.AddCmd( ID_CONFIG_PANEL,  _LT( "&Panel settings" ) );
 	_mdOptions.AddCmd( ID_CONFIG_EDITOR, _LT( "&Editor settings" ) );
 
@@ -804,8 +801,7 @@ void NCWin::ExecuteFile()
 
 		if ( !pFs || pFs->Type() != FS::SYSTEM )
 		{
-			NCMessageBox( this, _LT( "Run" ),
-			              _LT( "Can`t execute file in not system fs" ), true );
+			NCMessageBox( this, _LT( "Run" ), _LT( "Can't execute file in not system fs" ), true );
 			return;
 		}
 
@@ -894,8 +890,8 @@ void NCWin::PanelEnter(bool Shift)
 
 			if ( !pAppName ) { pAppName = emptyStr; }
 
-			int ret = NCMessageBox( this, "Open",
-			                        carray_cat<char>( "Executable file: ", p->name.GetUtf8(), "\ncan be opened by: ", unicode_to_utf8( pAppName ).data(), "\nExecute or Open?" ).data(),
+			int ret = NCMessageBox( this, "Open", carray_cat<char>( "Executable file: ", p->name.GetUtf8(), "\ncan be opened by: ", 
+																						unicode_to_utf8( pAppName ).data(), "\nExecute or Open?" ).data(),
 			                        false, bListOpenExec );
 
 			if ( ret == CMD_CANCEL ) { return; }
@@ -1769,7 +1765,7 @@ void NCWin::View( bool Secondary )
 
 		if ( !( fs->Flags() & FS::HAVE_SEEK ) )
 		{
-			NCMessageBox( this, _LT( "View" ), _LT( "Can`t start viewer in this filesystem" ), true );
+			NCMessageBox( this, _LT( "View" ), _LT( "Can't start viewer in this filesystem" ), true );
 			return;
 		};
 
@@ -2379,7 +2375,7 @@ void NCWin::PanelEqual()
 
 void NCWin::SaveSetupDialog()
 {
-	if ( NCMessageBox( this, _LT( "Save setup" ), _LT( "Do you with to save current setup?" ), false, bListOkCancel ) == CMD_OK )
+	if ( NCMessageBox( this, _LT( "Save setup" ), _LT( "Do you wish to save current setup?" ), false, bListOkCancel ) == CMD_OK )
 	{
 		SaveSetup();
 	}
@@ -2682,7 +2678,7 @@ void NCWin::EditExit()
 
 	if ( _editor.Changed() )
 	{
-		int ret = NCMessageBox( this, _LT( "Edit" ), _LT( "File has changes\nsave it?" ), true, bListYesNoCancel );
+		int ret = NCMessageBox( this, _LT( "Edit" ), _LT( "File has changes, save it?" ), true, bListYesNoCancel );
 
 		if ( ret == CMD_NO || ( ret == CMD_YES && EditSave( false ) ) )
 		{
@@ -3237,7 +3233,7 @@ bool NCWin::ProcessCommand_CD( const unicode_t* cmd )
 	{
 		char buf[4096];
 		FSString name = p;
-		Lsnprintf( buf, sizeof( buf ), _LT( "can`t change directory to:%s\n" ), name.GetUtf8() );
+		Lsnprintf( buf, sizeof( buf ), _LT( "Can't change directory to:%s\n" ), name.GetUtf8() );
 		NCMessageBox( this, "CD", buf, true );
 	}
 	else
@@ -3315,7 +3311,7 @@ bool NCWin::StartCommand( const std::vector<unicode_t>& CommandString, bool Forc
 				}
 				else
 				{
-					NCMessageBox( this, _LT( "Execute" ), _LT( "Can`t execute command in non system fs" ), true );
+					NCMessageBox( this, _LT( "Execute" ), _LT( "Can't execute command in non system fs" ), true );
 				}
 			}
 		}
@@ -4763,7 +4759,7 @@ NCWin::~NCWin() {}
 ////////////////////////  ButtonWin
 
 /*
-   //для переводчика
+   //for translator
    _LT("BB>Help")
    _LT("BB>View")
    _LT("BB>Edit")

@@ -42,13 +42,13 @@ public:
 
 	Mutex* GetMutex() { return &mutex; }
 
-	void* Data() { return data; } //можно вызывать и работать с данными только заблакировав mutex получаемый через GetMutex
-	bool NBStopped() { return stopped; } //можно вызывать только заблакировав mutex получаемый через GetMutex
+	void* Data() { return data; } //may be called and accessed to data only by locking the mutex recieved by calling GetMutex
+	bool NBStopped() { return stopped; } //may be called only by locking the mutex recieved by calling GetMutex
 
 	int CallBack( OperCallback f, void* data ); // ret < 0 if stopped
 
 	//!!! id >= 2
-	bool SendSignal( int id ) //обязательно запускать при НЕзалоченном mutex
+	bool SendSignal( int id ) //always run when mutex is unlocked
 	{ MutexLock lock( &mutex ); if ( stopped || id <= 1 ) { return false; } return WinThreadSignal( id ); }
 
 	~OperThreadNode();
@@ -57,8 +57,8 @@ private:
 	CLASS_COPY_PROTECTION( OperThreadNode );
 };
 
-//ф-ция потока, не должна пропускать исключений
-//поток может посылать сигналы только через tData
+//thread method, shouldn't have unhandled exceptions
+//thread may send signals throught tData only
 typedef void ( *OperThreadFunc )( OperThreadNode* node );
 
 
@@ -75,7 +75,7 @@ public:
 	OperThreadWin( WTYPE t, unsigned hints = 0, int nId = 0, Win* _parent = nullptr, const crect* rect = nullptr )
 		: Win( t, hints, _parent, rect, nId ), nextThreadId( 0 ), tNode( 0 ), cbExecuted( false ) {}
 
-	void RunNewThread( const char* info, OperThreadFunc f, void* data ); //может быть исключение
+	void RunNewThread( const char* info, OperThreadFunc f, void* data ); //may throw exception
 	virtual void OperThreadSignal( int info );
 	virtual void OperThreadStopped();
 

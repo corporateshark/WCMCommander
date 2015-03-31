@@ -452,7 +452,7 @@ VDataPtr VFile::_Get( long bn, FSCInfo* info, bool lockMutex )
 
 	int size = CACHE_BLOCK_SIZE;
 
-	//fs может читать клочками, а не сразу весь блок, поэтому цикл
+	//fs may read by chunks, not all block at once, thats why here is the loop
 	while ( size > 0 )
 	{
 		int bytes = fs->Read( fd, ( unsigned char* )s, size, &err, info );
@@ -685,7 +685,7 @@ bool VFile::ReadString( seek_t offset, ViewerString& str, charset_struct* charse
 
 	int count = ReadBlock( offset, buf, sizeof( buf ), info );
 	offset += count;
-	int lbPos = 0; //начало буфера от начала строки в байтах
+	int lbPos = 0; //buffer start from the beginning of the string
 
 	char tabChar = charset->tabChar;
 
@@ -1896,7 +1896,7 @@ void ViewWin::ThreadSignal( int id, int data )
 
 		}
 
-		if ( threadData->inFlags ) { return; } //есть еще неотработанное событие, подождем его выполнения
+		if ( threadData->inFlags ) { return; } //there is still unhandled event, wait until it is processed
 
 		lastResult = threadData->ret;
 		lastPos = threadData->pos;
@@ -2687,7 +2687,7 @@ void* VSThreadFunc( void* ptr )
 	}
 	catch ( ... )
 	{
-		try { data->m_Error = "BOTVA: unhabdled exception: void *VSThreadFunc(void *ptr) "; }
+		try { data->m_Error = "Unhabdled exception: void *VSThreadFunc(void *ptr) "; }
 		catch ( cexception* x ) { x->destroy(); }
 	}
 

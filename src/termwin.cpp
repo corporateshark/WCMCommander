@@ -29,7 +29,7 @@ void TerminalWin::OnChangeStyles()
 
 	if ( !cH ) { cH = 10; }
 
-//то же что и в EventSize надо подумать
+//the same as in EventSize, need to think about it
 	int W = _rect.Width();
 	int H = _rect.Height();
 
@@ -42,7 +42,7 @@ void TerminalWin::OnChangeStyles()
 TerminalWin::TerminalWin( int nId, Win* parent )
 	: Win( WT_CHILD, 0, parent, 0, nId ),
 	  _lo( 1, 2 ),
-	  _scroll( 0, this, true, false ), //надо пошаманить для автохида
+	  _scroll( 0, this, true, false ), //need to find solution for autohide
 	  cH( 1 ), cW( 1 ),
 	  _firstRow( 0 ),
 	  _currentRows( 1 )

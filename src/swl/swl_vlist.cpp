@@ -30,7 +30,7 @@ namespace wal
 		  layout( 4, 4 )
 
 	{
-		vScroll.Show();   //!!! неясности с порядком ???
+		vScroll.Show();   //!!! not clear with order ???
 		vScroll.Enable();
 		hScroll.Show();
 		hScroll.Enable();
@@ -210,7 +210,7 @@ namespace wal
 		}
 		else
 		{
-			//на всякий случай
+			//just in case
 			rect.Dec();
 			gc.SetFillColor( bgColor );
 			gc.FillRect( rect );

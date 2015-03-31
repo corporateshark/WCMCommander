@@ -19,11 +19,11 @@ template <class T> inline int CmpStr( T* a, T* b )
 
 
 /*
-   строки для хранения и преобразования разных чарсетов
-      id == -1 - юникод
+   strings for storing and converting different charsets
+      id == -1 - unicode
 
-      остальные - как в enum CHARSET_ID
-      id == 0   - это latin1
+      rest - as in enum CHARSET_ID
+      id == 0   - this is latin1
       id == 1 - utf8
       ...
 */
@@ -64,7 +64,6 @@ public:
 
 
 class FSPath;
-// эффект cptr !!!
 
 class FSString
 {
@@ -165,10 +164,10 @@ public:
 };
 
 
-//корневой директорий это пустая строка, т.е. если в начале пути есть пустая строка, то это абсолютный путь, если нет, то относительный
-//если пустая строка есть в середире пути то это косяк
+//root directory is an empty string, e.g. if there is empty string at the beginning, then this is absolute path, if not, then relative
+//if empty string at the middle of the path then this is bad
 
-//не многопоточный класс !!!
+//NOT thread-safe !!!
 
 class FSPath
 {
@@ -208,10 +207,10 @@ public:
 
 	FSString* GetItem( int n ) { return n >= 0 && n < data.count() ? &( data[n] ) : 0; }
 
-	void SetItem( int n, int cs, const void* v ); // n>=0 && n<=Count(); если n == Count то в конец добавляется еще один элемент
+	void SetItem( int n, int cs, const void* v ); // n>=0 && n<=Count(); if n == Count then one more element is added to the end
 	void Push( int cs, const void* v ) { SetItem( Count(), cs, v ); }
 
-	void SetItemStr( int n, const FSString& str ); // n>=0 && n<=Count(); если n == Count то в конец добавляется еще один элемент
+	void SetItemStr( int n, const FSString& str ); // n>=0 && n<=Count(); if n == Count then one more element is added to the end
 	void PushStr( const FSString& str ) { SetItemStr( Count(), str ); }
 
 	bool Pop() { if ( data.count() <= 0 ) { return false; } data[data.count() - 1].Clear(); data.del( data.count() - 1 ); cacheCs = -2; return true; }

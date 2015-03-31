@@ -72,7 +72,7 @@ namespace wal
 		currentRect( 0, 0, 0, 0 ),
 		valid( false )
 	{
-//	int i; //ошибка была в конструсторе ccollect(int n)
+//	int i; //error was in the ccollect(int n) constructor
 //	for (i=0; i<lineCount; i++) lines.append();
 //	for (i=0; i<colCount; i++) columns.append();
 	}
@@ -194,7 +194,7 @@ namespace wal
 	{
 		int i, n, addon, rem, space;
 
-		for ( i = 0; i < count; i++ ) //выставляем по минимуму
+		for ( i = 0; i < count; i++ ) //set by minimum
 		{
 			size -=  list[i].range.minimal;
 		}
@@ -392,7 +392,7 @@ namespace wal
 	{
 		int i, n, addon, rem;
 
-		for ( i = 0; i < count; i++ ) //выставляем по минимуму
+		for ( i = 0; i < count; i++ ) //set by minimum
 		{
 			size -= ( list[i].size = list[i].range.minimal );
 		}
@@ -546,12 +546,6 @@ namespace wal
 				SetMinRangeN  ( columns.ptr() + p->c1, p->c2 - p->c1 + 1, ls->x.minimal );
 				SetIdealRangeN( columns.ptr() + p->c1, p->c2 - p->c1 + 1, ls->x.ideal );
 				SetMaxRangeN  ( columns.ptr() + p->c1, p->c2 - p->c1 + 1, ls->x.maximal );
-
-				/*чо за херня тут была
-				SetMinRangeN(columns.ptr()+p->r1, p->r2-p->r1+1,ls->x.minimal);
-				SetIdealRangeN(columns.ptr()+p->r1, p->r2-p->r1+1,ls->x.ideal);
-				SetMaxRangeN(columns.ptr()+p->r1, p->r2-p->r1+1,ls->x.maximal);
-				*/
 			}
 		}
 
