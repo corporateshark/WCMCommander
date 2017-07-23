@@ -591,9 +591,7 @@ clPtr<FS> clArchPlugin::OpenFS( clPtr<FS> Fs, FSPath& Path ) const
 
 		FSArchNode* Dir = ArchGetParentDir( &RootDir, NodePath, ItemStat );
 		FSArchNode* Item = Dir->Add( FSArchNode( ItemName->GetUtf8(), ItemStat ) );
-		if (Item) {
-			Item->entryOffset = archive_read_header_position( Arch );
-		}
+		Item->entryOffset = archive_read_header_position( Arch );
 	}
 
 	if ( Res != ARCHIVE_EOF )
