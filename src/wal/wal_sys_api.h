@@ -500,6 +500,7 @@ namespace wal
 	inline int cond_create( cond_t* c ) { return pthread_cond_init( c, 0 ); }
 	inline int cond_delete( cond_t* c ) { return pthread_cond_destroy( c ); }
 	inline int cond_wait( cond_t* c, mutex_t* m ) { return pthread_cond_wait( c, m ); }
+	inline int cond_timedwait( cond_t* c, mutex_t* m, timespec* t ) { return pthread_cond_timedwait( c, m, t ); }
 	inline int cond_signal( cond_t* c ) { return pthread_cond_signal( c );}
 	inline int cond_broadcast( cond_t* c ) { return pthread_cond_broadcast( c );};
 	inline thread_t thread_self() { return pthread_self(); }

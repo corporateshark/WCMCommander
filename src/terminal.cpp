@@ -93,7 +93,10 @@ int TerminalStream::Read( char* buf, int size )
 	fd_set fr;
 	FD_ZERO( &fr );
 	FD_SET( _masterFd, &fr );
-	int n = select( _masterFd + 1, &fr, 0, 0, 0 );
+
+	timeval time;
+	time.tv_sec = 5;
+	int n = select( _masterFd + 1, &fr, 0, 0, &time );
 
 	if ( n < 0 ) { return n; }
 
@@ -112,7 +115,10 @@ int TerminalStream::Write( char* buf, int size )
 		fd_set fr;
 		FD_ZERO( &fr );
 		FD_SET( _masterFd, &fr );
-		int n = select( _masterFd + 1, 0, &fr, 0, 0 );
+
+		timeval time;
+		time.tv_sec = 5;
+		int n = select( _masterFd + 1, 0, &fr, 0, &time );
 
 		if ( n < 0 ) { return n; }
 
@@ -440,7 +446,9 @@ void* TerminalOutputThreadFunc( void* data )
 
 			if ( bytes <= 0 )
 			{
-				terminal->_outputCond.Wait( &terminal->_outputMutex );
+				timespec time;
+				time.tv_sec = 5;
+				terminal->_outputCond.TimedWait( &terminal->_outputMutex, &time );
 				terminal->_outputMutex.Unlock();
 				continue;
 			}
